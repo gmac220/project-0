@@ -9,17 +9,17 @@ A Go CLI program. Update `Readme.md` with a name, a list of implemented and plan
     - [] `io`
     - [] `os`
     - [] `flag`
-    - [] `log`
+    - [x] `log`
     - [] `http`
-    - [] `testing`
+    - [x] `testing`
 
 ### Go language features
-- [] primitive data types
+- [x] primitive data types
 - [] arrays/slices
 - [] maps
-- [] struct
+- [x] struct
 - [] interface
-- [] functions/methods
+- [x] functions/methods
 - [] unit tests/benchmarks
 
 ### Functionality
