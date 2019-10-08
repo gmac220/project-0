@@ -14,8 +14,14 @@ type Employee struct {
 	applications []string
 }
 
+func NewEmployee(username string, firstname string, lastname string, password string) {
+	//db.exec("INSERT INTO employees (username, firstname, lastname, password)
+	//  VALUES($1, $2, $3, $4)", username, firstname, lastname, password)
+}
+
 // Approve the Customer's application
 func (e *Employee) Approve() {
+	//
 	fmt.Println()
 }
 

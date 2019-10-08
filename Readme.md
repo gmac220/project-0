@@ -20,3 +20,12 @@ This app simulates banking on the terminal with CLI like commands that allows ba
 
 # Instructions
 Insert environment, build, and execution documentation here.
+Make sure to have docker installed
+go get -u github.com/lib/pq
+Inside project the database folder where Dockerfile is run
+```bash
+cd db
+sudo docker build -t billsfargo .
+sudo docker image ls
+sudo docker run -p 5432:5432 -d --rm --name billsfargorun billsfargo
+```

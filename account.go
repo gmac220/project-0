@@ -3,11 +3,13 @@ package main
 import "fmt"
 
 type Account struct {
-	accountname string
-	balance     float64
+	accountname   string
+	balance       float64
+	accountnumber int
 }
 
 // Account constructor
+// need to do add account number in here
 func NewAccount(name string, money float64) *Account {
 	return &Account{
 		accountname: name,
