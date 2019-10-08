@@ -1,4 +1,4 @@
-# Insert Project Name Here
+# Bills FarGO
 ## Godfrey Macasero
 A banking app that has two users customers and employees. 
 This app simulates banking on the terminal with CLI like commands that allows basic bank functions like withdrawing, depositing, and linking to your different accounts with what you have.

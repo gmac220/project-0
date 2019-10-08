@@ -7,7 +7,7 @@ A Go CLI program. Update `Readme.md` with a name, a list of implemented and plan
 - [] Go Standard Library Packages
     - [x] `fmt`
     - [] `io`
-    - [] `os`
+    - [x] `os`
     - [] `flag`
     - [x] `log`
     - [] `http`
@@ -15,8 +15,8 @@ A Go CLI program. Update `Readme.md` with a name, a list of implemented and plan
 
 ### Go language features
 - [x] primitive data types
-- [] arrays/slices
-- [] maps
+- [x] arrays/slices
+- [x] maps
 - [x] struct
 - [] interface
 - [x] functions/methods
