@@ -20,7 +20,7 @@ func Selection() {
 	fmt.Println("1: Sign In")
 	fmt.Println("2: Employee Sign In")
 	fmt.Println("3: Create an account")
-	fmt.Println("5: Exit")
+	fmt.Println("4: Exit")
 	fmt.Printf("Please type in a number: ")
 	fmt.Scanln(&num)
 
