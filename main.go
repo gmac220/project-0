@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -26,9 +27,9 @@ func Selection() {
 
 	switch num {
 	case 1:
-		SignIn()
+		SignIn(false)
 	case 2:
-		EmployeeSignIn()
+		SignIn(true)
 	case 3:
 		CreateAccount()
 	case 4:
@@ -36,10 +37,16 @@ func Selection() {
 	}
 }
 
-// SignIn verifies if user has an account with the bank
-func SignIn() {
+// SignIn verifies if customer or employee credentials match database
+func SignIn(employee bool) {
 	var username string
 	var pass string
+	var usernamedb string
+	var passdb string
+	var fname string
+	var lname string
+	var appcount int
+	var row *sql.Row
 
 	fmt.Printf("Enter username: ")
 	fmt.Scanln(&username)
@@ -47,11 +54,27 @@ func SignIn() {
 	SttyCommand("-echo")
 	fmt.Scanln(&pass)
 	SttyCommand("echo")
-}
+	fmt.Println()
+	db := OpenDB()
+	defer db.Close()
+	if employee {
+		row = db.QueryRow("SELECT * FROM employees WHERE username = $1", username)
+		row.Scan(&usernamedb, &passdb, &fname, &lname)
+	} else {
+		row = db.QueryRow("SELECT * FROM customers WHERE username = $1", username)
+		row.Scan(&usernamedb, &passdb, &fname, &lname, &appcount)
+	}
 
-// EmployeeSignIn()
-func EmployeeSignIn() {
-	//SignIn()
+	if passdb == pass {
+		fmt.Println("Login successful")
+		if employee {
+			EmployeePage()
+		} else {
+			CustomerPage(usernamedb, fname, lname)
+		}
+	} else {
+		fmt.Println("Password does not match")
+	}
 }
 
 // CreateAccount for either a customer or employee
@@ -81,6 +104,7 @@ func CreateAccount() {
 	case "c":
 		db.Exec("INSERT INTO customers (username, password, firstname, lastname, appcount)"+
 			"VALUES ($1, $2, $3, $4, 0)", username, pw, firstname, lastname)
+		CustomerPage(username, firstname, lastname)
 
 	case "e":
 		db.Exec("INSERT INTO employees (username, password, firstname, lastname)"+

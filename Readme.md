@@ -5,8 +5,8 @@ This app simulates banking on the terminal with CLI like commands that allows ba
 
 # User Stories
 - [] Customers should be able to:
-    - [] Register with a username and password
-    - [] Authenticate (login) with that usename and password
+    - [x] Register with a username and password
+    - [x] Authenticate (login) with that usename and password
     - [] Apply to open an account
     - [] Apply for joint accounts with other customers
     - [] Withdraw, deposit, and transfer funds between accounts
