@@ -17,6 +17,10 @@ type Customer struct {
 	accounts  map[string]Account
 }
 
+var cusername string
+var cfirstname string
+var clastname string
+
 // NewCustomer constructor
 func (c *Customer) NewCustomer(name string, pw string) *Customer {
 
@@ -26,8 +30,16 @@ func (c *Customer) NewCustomer(name string, pw string) *Customer {
 	}
 }
 
+// CustomerInit initializes global variables
+func CustomerInit(username string, firstname string, lastname string) {
+	cusername = username
+	cfirstname = firstname
+	clastname = lastname
+	CustomerPage()
+}
+
 // CustomerPage takes user to what the customer would like to do
-func CustomerPage(username string, firstname string, lastname string) {
+func CustomerPage() {
 	var num int
 	fmt.Println("What would you like to do today?")
 	fmt.Println("1: Apply")
@@ -38,28 +50,31 @@ func CustomerPage(username string, firstname string, lastname string) {
 	fmt.Println("6: Deposit")
 	fmt.Println("7: Transfer funds")
 	fmt.Println("8: Show number of pending applications")
-	fmt.Println("9: Exit")
+	fmt.Println("9: Logout")
+	fmt.Println("10: Exit")
 	fmt.Printf("Please type in a number: ")
 	fmt.Scanln(&num)
 
 	switch num {
 	case 1:
-		Apply(username, firstname, lastname, false)
+		Apply(cusername, cfirstname, clastname, false)
 	case 2:
-		JointApp(username, firstname, lastname, true)
+		JointApp(cusername, cfirstname, clastname, true)
 	case 3:
-		ShowAccounts(username)
+		ShowAccounts(cusername)
 	case 4:
-		ShowBalance(username)
+		ShowBalance(cusername)
 	case 5:
-		Withdraw()
+		Withdraw(cusername)
 	case 6:
-		Deposit()
+		Deposit(cusername)
 	case 7:
-		Transfer()
+		Transfer(cusername)
 	case 8:
-		ShowPendingApps()
+		ShowPendingApps(cusername)
 	case 9:
+		main()
+	case 10:
 		os.Exit(0)
 	}
 }
@@ -74,11 +89,16 @@ func Apply(username string, firstname string, lastname string, joint bool) {
 	defer db.Close()
 	fmt.Printf("What type of account do you want to open? checking or savings: ")
 	fmt.Scanln(&acntname)
-	db.Exec("INSERT INTO applications (username, firstname, lastname, acntname, joint)"+
-		"VALUES ($1, $2, $3, $4, $5)", username, firstname, lastname, acntname, false)
+	// db.Exec("INSERT INTO applications (username, firstname, lastname, acntname, joint)"+
+	// "VALUES ($1, $2, $3, $4, $5)", username, firstname, lastname, acntname, joint)
+	db.Exec("INSERT INTO applications"+
+		"(username, firstname, lastname, acntname, joint, username2, firstname2, lastname2)"+
+		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+		username, firstname, lastname, acntname, joint, "N/A", "N/A", "N/A")
 	row := db.QueryRow("SELECT appcount FROM customers WHERE username = $1", username)
 	row.Scan(&appcount)
 	db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount+1, username)
+	CustomerPage()
 }
 
 // JointApp adds to applications table
@@ -104,7 +124,8 @@ func JointApp(username string, firstname string, lastname string, joint bool) {
 	db.Exec("INSERT INTO applications"+
 		"(username, firstname, lastname, acntname, joint, username2, firstname2, lastname2)"+
 		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-		username, firstname, lastname, acntname, true, uname2, fname2, lname2)
+		username, firstname, lastname, acntname, joint, uname2, fname2, lname2)
+	CustomerPage()
 }
 
 // CheckCustomer verifies if the customer exists
@@ -128,30 +149,28 @@ func ShowAccounts(username string) {
 	db := OpenDB()
 	defer db.Close()
 	//loop through both accounts and joint accounts
-	rows, _ := db.Query("SELECT * FROM accounts WHERE username = ")
+	rows, _ := db.Query("SELECT * FROM accounts WHERE username = ", username)
 	for rows.Next() {
 		var id int
 		var name string
 		rows.Scan(&id, &name)
 		fmt.Println(id, name)
 	}
+	CustomerPage()
 }
 
 // ShowBalance of account
 func ShowBalance(username string) {
-	var account string
+	var acntnum int
 	var balance float64
-	var acntnumber int
-	var uname string
 
-	fmt.Println("What account do you want to check the balance for?: ")
-	fmt.Scanln(&account)
+	fmt.Println("What account number do you want to check the balance for?: ")
+	fmt.Scanln(&acntnum)
 	db := OpenDB()
 	defer db.Close()
-	row := db.QueryRow("SELECT balance FROM accounts WHERE acntname = $1", account)
-	row.Scan(&acntnumber, &account, &balance, &uname)
+	row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
+	row.Scan(&balance)
 	fmt.Println("This is your balance: ", balance)
-
 }
 
 // Withdraw money to bank account balance

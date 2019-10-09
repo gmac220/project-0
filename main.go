@@ -70,7 +70,7 @@ func SignIn(employee bool) {
 		if employee {
 			EmployeePage()
 		} else {
-			CustomerPage(usernamedb, fname, lname)
+			CustomerInit(usernamedb, fname, lname)
 		}
 	} else {
 		fmt.Println("Password does not match")
@@ -104,11 +104,12 @@ func CreateAccount() {
 	case "c":
 		db.Exec("INSERT INTO customers (username, password, firstname, lastname, appcount)"+
 			"VALUES ($1, $2, $3, $4, 0)", username, pw, firstname, lastname)
-		CustomerPage(username, firstname, lastname)
+		CustomerInit(username, firstname, lastname)
 
 	case "e":
 		db.Exec("INSERT INTO employees (username, password, firstname, lastname)"+
 			"VALUES ($1, $2, $3, $4)", username, pw, firstname, lastname)
+		EmployeePage()
 	}
 }
 
