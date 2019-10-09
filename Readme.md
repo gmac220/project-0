@@ -27,5 +27,6 @@ Inside project the database folder where Dockerfile is run
 cd db
 sudo docker build -t billsfargo .
 sudo docker image ls
-sudo docker run -p 5432:5432 -d --rm --name billsfargorun billsfargo
+sudo docker run -p 5432:5432 -d --rm --name runningbillsfargo billsfargo
+sudo docker exec -it runningbillsfargo psql -U postgres
 ```

@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Welcome to Bills FarGO")
+	fmt.Println("Welcome to Bills FarGO!")
 	Selection()
 
 }
@@ -36,27 +36,56 @@ func Selection() {
 	}
 }
 
-// SignIn
+// SignIn verifies if user has an account with the bank
 func SignIn() {
 	var username string
 	var pass string
+
 	fmt.Printf("Enter username: ")
 	fmt.Scanln(&username)
 	fmt.Printf("Enter password: ")
 	SttyCommand("-echo")
 	fmt.Scanln(&pass)
 	SttyCommand("echo")
-	fmt.Println(username, pass)
 }
 
 // EmployeeSignIn()
 func EmployeeSignIn() {
-
+	//SignIn()
 }
 
-// CreateAccount
+// CreateAccount for either a customer or employee
 func CreateAccount() {
+	var choice string
+	var username string
+	var pw string
+	var firstname string
+	var lastname string
 
+	db := OpenDB()
+	defer db.Close()
+	fmt.Printf("Enter your firstname: ")
+	fmt.Scanln(&firstname)
+	fmt.Printf("Enter your lastname: ")
+	fmt.Scanln(&lastname)
+	fmt.Printf("Enter username: ")
+	fmt.Scanln(&username)
+	fmt.Printf("Enter password: ")
+	SttyCommand("-echo")
+	fmt.Scanln(&pw)
+	SttyCommand("echo")
+	fmt.Println()
+	fmt.Printf("Is this Account for a Customer or an Employee? type c or e: ")
+	fmt.Scanln(&choice)
+	switch choice {
+	case "c":
+		db.Exec("INSERT INTO customers (username, password, firstname, lastname, appcount)"+
+			"VALUES ($1, $2, $3, $4, 0)", username, pw, firstname, lastname)
+
+	case "e":
+		db.Exec("INSERT INTO employees (username, password, firstname, lastname)"+
+			"VALUES ($1, $2, $3, $4)", username, pw, firstname, lastname)
+	}
 }
 
 // SttyCommand hides the password so it doesn't show up in the terminal when user types it
