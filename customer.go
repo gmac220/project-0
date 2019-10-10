@@ -61,17 +61,17 @@ func CustomerPage() {
 	case 2:
 		JointApp(cusername, cfirstname, clastname, true)
 	case 3:
-		ShowAccounts(cusername)
+		ShowAccounts()
 	case 4:
-		ShowBalance(cusername)
+		ShowBalance()
 	case 5:
-		Withdraw(cusername)
+		Withdraw()
 	case 6:
-		Deposit(cusername)
+		Deposit()
 	case 7:
-		Transfer(cusername)
+		Transfer()
 	case 8:
-		ShowPendingApps(cusername)
+		ShowPendingApps()
 	case 9:
 		main()
 	case 10:
@@ -145,53 +145,134 @@ func CheckCustomer(username string) (string, string, string) {
 }
 
 // ShowAccounts lists out the accounts the user currently has
-func ShowAccounts(username string) {
+func ShowAccounts() {
+	var acntnumber int
+	var acntname string
+	var balance float64
+
 	db := OpenDB()
 	defer db.Close()
 	//loop through both accounts and joint accounts
-	rows, _ := db.Query("SELECT * FROM accounts WHERE username = ", username)
+	fmt.Println("-------------------------SHOW ACCOUNTS-------------------------")
+	fmt.Println()
+	rows, _ := db.Query("SELECT acntnumber, balance, acntname FROM accounts WHERE username = $1", cusername)
 	for rows.Next() {
-		var id int
-		var name string
-		rows.Scan(&id, &name)
-		fmt.Println(id, name)
+
+		rows.Scan(&acntnumber, &balance, &acntname)
+		fmt.Println(acntnumber, acntname, balance)
 	}
+	fmt.Println()
+	fmt.Println("---------------------------------------------------------------")
 	CustomerPage()
 }
 
 // ShowBalance of account
-func ShowBalance(username string) {
+func ShowBalance() {
 	var acntnum int
 	var balance float64
 
-	fmt.Println("What account number do you want to check the balance for?: ")
+	fmt.Printf("What account number do you want to check the balance for?: ")
 	fmt.Scanln(&acntnum)
 	db := OpenDB()
 	defer db.Close()
 	row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
 	row.Scan(&balance)
 	fmt.Println("This is your balance: ", balance)
+	CustomerPage()
 }
 
 // Withdraw money to bank account balance
-func Withdraw(username string) {
+func Withdraw() {
+	var acntnum int
+	var withdrawal float64
+	var balance float64
 
+	fmt.Printf("What account number would you like to withdraw from: ")
+	fmt.Scanln(&acntnum)
+	fmt.Printf("How much money would you like to withdraw? Ex. 20.02:")
+	fmt.Scanln(&withdrawal)
+	db := OpenDB()
+	defer db.Close()
+	row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
+	row.Scan(&balance)
+	for withdrawal > balance {
+		fmt.Printf("Not enough money in balance please enter another amount: ")
+		fmt.Scanln(&withdrawal)
+	}
+	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance-withdrawal, acntnum)
+	CustomerPage()
 }
 
 // Deposit money to bank account balance
-func Deposit(username string) {
+func Deposit() {
+	var acntnum int
+	var deposit float64
+	var balance float64
 
+	fmt.Printf("What account number would you like to deposit into: ")
+	fmt.Scanln(&acntnum)
+	fmt.Printf("How much money would you like to deposit? Ex. 20.02:")
+	fmt.Scanln(&deposit)
+	db := OpenDB()
+	defer db.Close()
+	row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
+	row.Scan(&balance)
+	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+deposit, acntnum)
+	CustomerPage()
 }
 
 // ShowPendingApps shows the amount of applications the user has applied to
-func ShowPendingApps(username string) {
+func ShowPendingApps() {
+	var username string
+	var acntnum int
+	var acntname string
+	var fname string
+	var lname string
+	var joint bool
+	var uname2 string
+	var fname2 string
+	var lname2 string
 
+	db := OpenDB()
+	defer db.Close()
+	fmt.Println("----------------------PENDING APPLICATIONS----------------------")
+	rows, _ := db.Query("SELECT * FROM applications WHERE username = $1", cusername)
+	for rows.Next() {
+		rows.Scan(&acntnum, &username, &fname, &lname, &acntname, &joint, &uname2, &fname2, &lname2)
+		if joint {
+			fmt.Println(acntnum, username, fname, lname, uname2, fname2, lname2)
+		} else {
+			fmt.Println(acntnum, username, fname, lname)
+		}
+	}
+	fmt.Println("---------------------------------------------------------------")
+	CustomerPage()
 }
 
 // Transfer money from one account to the other
-func Transfer(username string) {
-	// account1 := c.accounts[acntname]
-	// account2 := c.accounts[acntname2]
-	// account1.Withdraw(money)
-	// account2.Deposit(money)
+func Transfer() {
+	var acntnumwithdraw int
+	var acntnumdeposit int
+	var funds float64
+	var balance float64
+
+	fmt.Printf("What account number would you like to take money out of?: ")
+	fmt.Scanln(&acntnumwithdraw)
+	fmt.Printf("What account number would you like to transfer into?: ")
+	fmt.Scanln(&acntnumdeposit)
+	fmt.Printf("How much money would you like to transfer? Ex. 20.02: ")
+	fmt.Scanln(&funds)
+	db := OpenDB()
+	defer db.Close()
+	row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnumwithdraw)
+	row.Scan(&balance)
+	for funds > balance {
+		fmt.Printf("Not enough money in balance please enter another amount: ")
+		fmt.Scanln(&funds)
+	}
+	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance-funds, acntnumwithdraw)
+	row = db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnumdeposit)
+	row.Scan(&balance)
+	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+funds, acntnumdeposit)
+	CustomerPage()
 }

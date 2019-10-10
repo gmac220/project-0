@@ -26,6 +26,7 @@ func NewEmployee(username string, firstname string, lastname string, password st
 func EmployeePage() {
 	var num int
 	var acntnumber int
+	var username string
 	fmt.Println("What do you want to do")
 	fmt.Println("1: Approve")
 	fmt.Println("2: Deny")
@@ -51,8 +52,8 @@ func EmployeePage() {
 	case 3:
 		fmt.Printf("Which customer's information do you want to look at?" +
 			" (Please input customer's username): ")
-		fmt.Scanln(&acntnumber)
-		//implement how to get info
+		fmt.Scanln(&username)
+		CustomerInfo(username)
 	case 4:
 		Applications()
 	case 5:
@@ -85,8 +86,8 @@ func Approve(num int) {
 		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname2)
 		row.Scan(&appcount)
 		db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname2)
-		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint", 0, uname)
-		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint", 0, uname2)
+		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint"+uname2, 0, uname)
+		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint"+uname, 0, uname2)
 	} else {
 		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
 		row.Scan(&appcount)
@@ -106,10 +107,12 @@ func DeleteApplication(num int) {
 }
 
 // CustomerInfo looks at all of customers account information
-func CustomerInfo() {
+func CustomerInfo(username string) {
 	//make a search join where you use username as id
 	db := OpenDB()
 	defer db.Close()
+	// row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", username)
+	// row.Scan(&appcount)
 	EmployeePage()
 }
 
