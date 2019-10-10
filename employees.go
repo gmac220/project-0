@@ -67,8 +67,8 @@ func Approve(num int) {
 		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname2)
 		row.Scan(&appcount)
 		db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname2)
-		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint"+uname2, 0, uname)
-		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint"+uname, 0, uname2)
+		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint"+acntname+uname2+uname2, 0, uname)
+		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint"+acntname+uname2+uname2, 0, uname2)
 	} else {
 		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
 		row.Scan(&appcount)

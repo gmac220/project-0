@@ -23,8 +23,17 @@ This app simulates banking on the terminal with CLI like commands that allows ba
 # Instructions
 Insert environment, build, and execution documentation here.
 Make sure to have docker installed
+```bash
+sudo apt search docker
+sudo apt install docker
+sudo apt install docker.io
+```
+Have postgres image installed with docker & driver
+```bash
+sudo docker run postgres
 go get -u github.com/lib/pq
-Inside project the database folder where Dockerfile is run
+```
+Inside project file go into the database folder where Dockerfile is run
 ```bash
 cd db
 docker build -t billsfargo .

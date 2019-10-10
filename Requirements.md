@@ -15,9 +15,9 @@ A Go CLI program. Update `Readme.md` with a name, a list of implemented and plan
 
 ### Go language features
 - [x] primitive data types
-- [x] arrays/slices
-- [x] maps
-- [x] struct
+- [] arrays/slices
+- [] maps
+- [] struct
 - [] interface
 - [x] functions/methods
 - [] unit tests/benchmarks
