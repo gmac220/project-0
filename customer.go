@@ -67,7 +67,7 @@ func Apply(username string, firstname string, lastname string, joint bool) {
 
 	db := OpenDB()
 	defer db.Close()
-	fmt.Printf("What type of account do you want to open? checking or savings: ")
+	fmt.Printf("What type of account do you want to open? checking, savings, other...: ")
 	fmt.Scanln(&acntname)
 	db.Exec("INSERT INTO applications"+
 		"(username, firstname, lastname, acntname, joint, username2, firstname2, lastname2)"+
@@ -76,6 +76,7 @@ func Apply(username string, firstname string, lastname string, joint bool) {
 	row := db.QueryRow("SELECT appcount FROM customers WHERE username = $1", username)
 	row.Scan(&appcount)
 	db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount+1, username)
+	fmt.Println("Application Successful!")
 	CustomerPage()
 }
 
@@ -85,10 +86,11 @@ func JointApp(username string, firstname string, lastname string, joint bool) {
 	var fname2 string
 	var lname2 string
 	var acntname string
+	var appcount int
 
 	db := OpenDB()
 	defer db.Close()
-	fmt.Printf("What type of account do you want to open? checking or savings: ")
+	fmt.Printf("What type of account do you want to open? checking, savings, other...: ")
 	fmt.Scanln(&acntname)
 	fmt.Printf("What user do you want to share an account with? Please input username of that user: ")
 	fmt.Scanln(&uname2)
@@ -99,10 +101,17 @@ func JointApp(username string, firstname string, lastname string, joint bool) {
 		uname2, fname2, lname2 = CheckCustomer(uname2)
 	}
 
+	row := db.QueryRow("SELECT appcount FROM customers WHERE username = $1", username)
+	row.Scan(&appcount)
+	db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount+1, username)
+	row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname2)
+	row.Scan(&appcount)
+	db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount+1, uname2)
 	db.Exec("INSERT INTO applications"+
 		"(username, firstname, lastname, acntname, joint, username2, firstname2, lastname2)"+
 		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
 		username, firstname, lastname, acntname, joint, uname2, fname2, lname2)
+	fmt.Println("Joint Application with", uname2, "Successful!")
 	CustomerPage()
 }
 
@@ -127,17 +136,23 @@ func ShowAccounts() {
 	var acntnumber int
 	var acntname string
 	var balance float64
+	var username string
 
 	db := OpenDB()
 	defer db.Close()
 	//loop through both accounts and joint accounts
 	fmt.Println("-------------------------YOUR ACCOUNTS-------------------------")
 	fmt.Println()
-	rows, _ := db.Query("SELECT acntnumber, balance, acntname FROM accounts WHERE username = $1", cusername)
+	rows, _ := db.Query("SELECT acntnumber, balance, acntname, username FROM accounts WHERE username = $1 OR username2 = $2", cusername, cusername)
 	for rows.Next() {
 
-		rows.Scan(&acntnumber, &balance, &acntname)
-		fmt.Println(acntnumber, acntname, balance)
+		rows.Scan(&acntnumber, &balance, &acntname, &username)
+		if username != cusername {
+			fmt.Println("Account #:", acntnumber, "|Account name:", acntname, "|Balance:", balance, "|Other Account Holder:", username)
+		} else {
+			fmt.Println("Account #:", acntnumber, "|Account name:", acntname, "|Balance:", balance)
+		}
+
 	}
 	fmt.Println()
 	fmt.Println("---------------------------------------------------------------")
@@ -191,6 +206,7 @@ func Withdraw() {
 		fmt.Scanln(&withdrawal)
 	}
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance-withdrawal, acntnum)
+	fmt.Println("Withdraw Successful!")
 	CustomerPage()
 }
 
@@ -207,12 +223,13 @@ func Deposit() {
 	db := OpenDB()
 	defer db.Close()
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+deposit, acntnum)
+	fmt.Println("Deposit Successful!")
 	CustomerPage()
 }
 
 // ShowPendingApps shows the amount of applications the user has applied to
 func ShowPendingApps() {
-	var username string
+	var uname string
 	var acntnum int
 	var acntname string
 	var fname string
@@ -228,11 +245,14 @@ func ShowPendingApps() {
 	fmt.Println()
 	rows, _ := db.Query("SELECT * FROM applications WHERE username = $1", cusername)
 	for rows.Next() {
-		rows.Scan(&acntnum, &username, &fname, &lname, &acntname, &joint, &uname2, &fname2, &lname2)
+		rows.Scan(&acntnum, &uname, &fname, &lname, &acntname, &joint, &uname2, &fname2, &lname2)
 		if joint {
-			fmt.Println(acntnum, username, fname, lname, uname2, fname2, lname2)
+			fmt.Println("Account #:", acntnum, "|Type: Joint", "|Username1:", uname,
+				"|First name:", fname, "|Last name:", lname, "|Username2:", uname2,
+				"|First name:", fname2, "|Last name:", lname2)
 		} else {
-			fmt.Println(acntnum, username, fname, lname)
+			fmt.Println("Account #:", acntnum, "|Type: Solo ", "|Username:", uname,
+				" |First name:", fname, "|Last name:", lname)
 		}
 	}
 	fmt.Println()
@@ -263,5 +283,6 @@ func Transfer() {
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance-funds, acntnumwithdraw)
 	balance, _ = VerifyAccount(acntnumdeposit)
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+funds, acntnumdeposit)
+	fmt.Println("Transfer Successful!")
 	CustomerPage()
 }

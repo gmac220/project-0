@@ -32,6 +32,7 @@ func EmployeePage() {
 			" (Please input application number): ")
 		fmt.Scanln(&acntnumber)
 		DeleteApplication(acntnumber)
+		fmt.Println("Application Denied :(")
 
 	case 3:
 		fmt.Printf("Which customer's information do you want to look at?" +
@@ -67,15 +68,14 @@ func Approve(num int) {
 		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname2)
 		row.Scan(&appcount)
 		db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname2)
-		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint"+acntname+uname2+uname2, 0, uname)
-		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint"+acntname+uname2+uname2, 0, uname2)
+		db.Exec("INSERT INTO accounts (acntname, balance, username, username2) VALUES ($1, $2, $3, $4)", "joint"+acntname, 0, uname, uname2)
 	} else {
 		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
 		row.Scan(&appcount)
 		db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname)
 		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", acntname, 0, uname)
-
 	}
+	fmt.Println("Application Approved!")
 	DeleteApplication(num)
 }
 
@@ -98,15 +98,21 @@ func CustomerInfo(username string) {
 	var fname string
 	var lname string
 	var appcount int
+	var otheruname string
 
 	db := OpenDB()
 	defer db.Close()
-	rows, _ := db.Query("SELECT * FROM accounts FULL OUTER JOIN customers on customers.username = accounts.username WHERE customers.username = $1", username)
+	rows, _ := db.Query("SELECT * FROM accounts FULL OUTER JOIN customers on customers.username = accounts.username OR customers.username = accounts.username2 WHERE customers.username = $1", username)
 	fmt.Println("---------------------------" + username + "'s INFORMATION------------------------------")
 	fmt.Println()
 	for rows.Next() {
-		rows.Scan(&acntnumber, &acntname, &balance, &uname, &uname2, &pw, &fname, &lname, &appcount)
-		fmt.Println(acntnumber, acntname, balance, uname)
+		rows.Scan(&acntnumber, &acntname, &balance, &uname, &uname2, &otheruname, &pw, &fname, &lname, &appcount)
+		if username == uname {
+			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance, "|Username:", uname)
+		} else {
+			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance, "|Username:", uname2)
+		}
+
 	}
 	fmt.Println()
 	fmt.Println("---------------------------------------------------------------------------------")
@@ -117,7 +123,7 @@ func CustomerInfo(username string) {
 func Applications() {
 	var acntnum int
 	var acntname string
-	var username string
+	var uname string
 	var fname string
 	var lname string
 	var joint bool
@@ -131,11 +137,14 @@ func Applications() {
 	fmt.Println()
 	rows, _ := db.Query("SELECT * FROM applications")
 	for rows.Next() {
-		rows.Scan(&acntnum, &username, &fname, &lname, &acntname, &joint, &uname2, &fname2, &lname2)
+		rows.Scan(&acntnum, &uname, &fname, &lname, &acntname, &joint, &uname2, &fname2, &lname2)
 		if joint {
-			fmt.Println(acntnum, joint, username, fname, lname, uname2, fname2, lname2)
+			fmt.Println("Account #:", acntnum, "|Type: Joint", "|Username1:", uname,
+				"|First name:", fname, "|Last name:", lname, "|Username2:", uname2,
+				"|First name:", fname2, "|Last name", lname2)
 		} else {
-			fmt.Println(acntnum, joint, username, fname, lname)
+			fmt.Println("Account #:", acntnum, "|Type: Solo ", "|Username:", uname,
+				" |First name:", fname, "|Last name:", lname)
 		}
 	}
 	fmt.Println()

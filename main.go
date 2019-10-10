@@ -69,7 +69,7 @@ func SignIn(employee bool) {
 	}
 
 	if passdb == pass {
-		fmt.Println("Login successful")
+		fmt.Println("Login Successful!")
 		if employee {
 			EmployeePage()
 		} else {

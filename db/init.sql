@@ -28,6 +28,7 @@ create table applications(
 create table accounts(
     acntnumber serial primary key,
     acntname varchar NOT NULL,
-    balance decimal,
-    username varchar
+    balance decimal NOT NULL,
+    username varchar NOT NULL,
+    username2 varchar
 );
