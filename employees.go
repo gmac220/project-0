@@ -47,6 +47,7 @@ func EmployeePage() {
 			" (Please input application number): ")
 		fmt.Scanln(&acntnumber)
 		DeleteApplication(acntnumber)
+
 	case 3:
 		fmt.Printf("Which customer's information do you want to look at?" +
 			" (Please input customer's username): ")
@@ -73,9 +74,9 @@ func Approve(num int) {
 
 	db := OpenDB()
 	defer db.Close()
-	row := db.QueryRow("SELECT username, acntname, joint, username2"+
-		"FROM applications WHERE acntnumber = $1", num)
+	row := db.QueryRow("SELECT username, acntname, joint, username2 FROM applications WHERE acntnumber = $1", num)
 	row.Scan(&uname, &acntname, &joint, &uname2)
+	fmt.Println(uname, acntname, joint, uname2)
 	if joint {
 		// Updates appcount from both users in joint account. Adds the account in accounts table.
 		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
@@ -84,8 +85,8 @@ func Approve(num int) {
 		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname2)
 		row.Scan(&appcount)
 		db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname2)
-		db.Exec("INSERT INTO accounts (acntname, username) VALUES ($1, $2)", "join", uname)
-		db.Exec("INSERT INTO accounts (acntname, username) VALUES ($1, $2)", "join", uname2)
+		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint", 0, uname)
+		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", "joint", 0, uname2)
 	} else {
 		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
 		row.Scan(&appcount)
@@ -94,7 +95,6 @@ func Approve(num int) {
 
 	}
 	DeleteApplication(num)
-	EmployeePage()
 }
 
 // DeleteApplication deletes row from table
@@ -102,12 +102,15 @@ func DeleteApplication(num int) {
 	db := OpenDB()
 	defer db.Close()
 	db.Exec("DELETE FROM applications WHERE acntnumber = $1", num)
+	EmployeePage()
 }
 
 // CustomerInfo looks at all of customers account information
 func CustomerInfo() {
 	//make a search join where you use username as id
-
+	db := OpenDB()
+	defer db.Close()
+	EmployeePage()
 }
 
 // Applications loops through database and puts employees in struct
