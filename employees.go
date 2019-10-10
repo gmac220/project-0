@@ -5,24 +5,7 @@ import (
 	"os"
 )
 
-// Employee struct
-type Employee struct {
-	username  string
-	password  string
-	firstname string
-	lastname  string
-	// figure out how to add customers in approve
-	customers    []Customer
-	applications []string
-}
-
-func NewEmployee(username string, firstname string, lastname string, password string) {
-	db := OpenDB()
-	defer db.Close()
-	//db.exec("INSERT INTO employees (username, firstname, lastname, password)
-	//  VALUES($1, $2, $3, $4)", username, firstname, lastname, password)
-}
-
+// EmployeePage prompts the employee what they could do and asks them to pick a choice.
 func EmployeePage() {
 	var num int
 	var acntnumber int
@@ -64,7 +47,6 @@ func EmployeePage() {
 }
 
 // Approve the Customer's application
-// Approve not working correctly
 func Approve(num int) {
 	//var row *sql.Row
 	var uname string
@@ -98,7 +80,7 @@ func Approve(num int) {
 	DeleteApplication(num)
 }
 
-// DeleteApplication deletes row from table
+// DeleteApplication deletes row from applications table
 func DeleteApplication(num int) {
 	db := OpenDB()
 	defer db.Close()
@@ -106,17 +88,32 @@ func DeleteApplication(num int) {
 	EmployeePage()
 }
 
-// CustomerInfo looks at all of customers account information
+// CustomerInfo looks at all of customers account information by passing in their username
 func CustomerInfo(username string) {
-	//make a search join where you use username as id
+	var acntnumber int
+	var acntname string
+	var balance float64
+	var uname string
+	var uname2 string
+	var pw string
+	var fname string
+	var lname string
+	var appcount int
 	db := OpenDB()
 	defer db.Close()
-	// row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", username)
-	// row.Scan(&appcount)
+	rows, _ := db.Query("SELECT * FROM accounts FULL OUTER JOIN customers on customers.username = accounts.username WHERE customers.username = $1", username)
+	fmt.Println("---------------------------" + username + "'s INFORMATION------------------------------")
+	fmt.Println()
+	for rows.Next() {
+		rows.Scan(&acntnumber, &acntname, &balance, &uname, &uname2, &pw, &fname, &lname, &appcount)
+		fmt.Println(acntnumber, acntname, balance, uname)
+	}
+	fmt.Println()
+	fmt.Println("---------------------------------------------------------------------------------")
 	EmployeePage()
 }
 
-// Applications loops through database and puts employees in struct
+// Applications loops through applications table listing if they are joint applications or not
 func Applications() {
 	var acntnum int
 	var acntname string
@@ -131,6 +128,7 @@ func Applications() {
 	db := OpenDB()
 	defer db.Close()
 	fmt.Println("----------------------LISTED APPLICATIONS----------------------")
+	fmt.Println()
 	rows, _ := db.Query("SELECT * FROM applications")
 	for rows.Next() {
 		rows.Scan(&acntnum, &username, &fname, &lname, &acntname, &joint, &uname2, &fname2, &lname2)
@@ -140,6 +138,7 @@ func Applications() {
 			fmt.Println(acntnum, joint, username, fname, lname)
 		}
 	}
+	fmt.Println()
 	fmt.Println("---------------------------------------------------------------")
 	EmployeePage()
 }

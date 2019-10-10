@@ -14,7 +14,7 @@ func main() {
 
 }
 
-// Selection
+// Selection prompts the user what they would want to do
 func Selection() {
 	var num int
 	fmt.Println("What would you like to do?")

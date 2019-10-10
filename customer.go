@@ -7,28 +7,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// Customer struct
-type Customer struct {
-	username  string
-	password  string
-	firstname string
-	lastname  string
-	appcount  int
-	accounts  map[string]Account
-}
-
 var cusername string
 var cfirstname string
 var clastname string
-
-// NewCustomer constructor
-func (c *Customer) NewCustomer(name string, pw string) *Customer {
-
-	return &Customer{
-		username: name,
-		password: pw,
-	}
-}
 
 // CustomerInit initializes global variables
 func CustomerInit(username string, firstname string, lastname string) {
@@ -38,7 +19,7 @@ func CustomerInit(username string, firstname string, lastname string) {
 	CustomerPage()
 }
 
-// CustomerPage takes user to what the customer would like to do
+// CustomerPage prompts the customer what they could do and asks them to pick a choice.
 func CustomerPage() {
 	var num int
 	fmt.Println("What would you like to do today?")
@@ -81,7 +62,6 @@ func CustomerPage() {
 
 // Apply adds to applications table
 func Apply(username string, firstname string, lastname string, joint bool) {
-	//Adds data to application table on database
 	var acntname string
 	var appcount int
 
@@ -89,8 +69,6 @@ func Apply(username string, firstname string, lastname string, joint bool) {
 	defer db.Close()
 	fmt.Printf("What type of account do you want to open? checking or savings: ")
 	fmt.Scanln(&acntname)
-	// db.Exec("INSERT INTO applications (username, firstname, lastname, acntname, joint)"+
-	// "VALUES ($1, $2, $3, $4, $5)", username, firstname, lastname, acntname, joint)
 	db.Exec("INSERT INTO applications"+
 		"(username, firstname, lastname, acntname, joint, username2, firstname2, lastname2)"+
 		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
@@ -153,7 +131,7 @@ func ShowAccounts() {
 	db := OpenDB()
 	defer db.Close()
 	//loop through both accounts and joint accounts
-	fmt.Println("-------------------------SHOW ACCOUNTS-------------------------")
+	fmt.Println("-------------------------YOUR ACCOUNTS-------------------------")
 	fmt.Println()
 	rows, _ := db.Query("SELECT acntnumber, balance, acntname FROM accounts WHERE username = $1", cusername)
 	for rows.Next() {
@@ -166,22 +144,28 @@ func ShowAccounts() {
 	CustomerPage()
 }
 
-// ShowBalance of account
+// ShowBalance shows the balance of an account the user chooses
 func ShowBalance() {
 	var acntnum int
 	var balance float64
+	var acntname string
 
 	fmt.Printf("What account number do you want to check the balance for?: ")
 	fmt.Scanln(&acntnum)
 	db := OpenDB()
 	defer db.Close()
-	row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
-	row.Scan(&balance)
-	fmt.Println("This is your balance: ", balance)
+	row := db.QueryRow("SELECT balance, acntname FROM accounts WHERE acntnumber = $1", acntnum)
+	row.Scan(&balance, &acntname)
+	if acntname == "" {
+		fmt.Println("That account does not exist.")
+	} else {
+		fmt.Println("This is your balance: ", balance)
+	}
+
 	CustomerPage()
 }
 
-// Withdraw money to bank account balance
+// Withdraw takes out money from an account the user chooses
 func Withdraw() {
 	var acntnum int
 	var withdrawal float64
@@ -203,7 +187,7 @@ func Withdraw() {
 	CustomerPage()
 }
 
-// Deposit money to bank account balance
+// Deposit adds money to an account the user chooses
 func Deposit() {
 	var acntnum int
 	var deposit float64
@@ -236,6 +220,7 @@ func ShowPendingApps() {
 	db := OpenDB()
 	defer db.Close()
 	fmt.Println("----------------------PENDING APPLICATIONS----------------------")
+	fmt.Println()
 	rows, _ := db.Query("SELECT * FROM applications WHERE username = $1", cusername)
 	for rows.Next() {
 		rows.Scan(&acntnum, &username, &fname, &lname, &acntname, &joint, &uname2, &fname2, &lname2)
@@ -245,11 +230,12 @@ func ShowPendingApps() {
 			fmt.Println(acntnum, username, fname, lname)
 		}
 	}
+	fmt.Println()
 	fmt.Println("---------------------------------------------------------------")
 	CustomerPage()
 }
 
-// Transfer money from one account to the other
+// Transfer takes money from one account to another account available in the database
 func Transfer() {
 	var acntnumwithdraw int
 	var acntnumdeposit int

@@ -7,12 +7,12 @@ This app simulates banking on the terminal with CLI like commands that allows ba
 - [] Customers should be able to:
     - [x] Register with a username and password
     - [x] Authenticate (login) with that usename and password
-    - [] Apply to open an account
-    - [] Apply for joint accounts with other customers
+    - [x] Apply to open an account
+    - [x] Apply for joint accounts with other customers
     - [] Withdraw, deposit, and transfer funds between accounts
-- [] Employees should be able to:
-    - [] View customer information
-    - [] Approve/deny open applications for accounts
+- [x] Employees should be able to:
+    - [x] View customer information
+    - [x] Approve/deny open applications for accounts
     - [x] Register with a username and password
     - [x] Authenticate (login) with that usename and password
 - [x] All account and user information should persist to files or a database
