@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	fmt.Println()
 	fmt.Println("Welcome to Bills FarGO!")
 	Selection()
 

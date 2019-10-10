@@ -59,7 +59,6 @@ func Approve(num int) {
 	defer db.Close()
 	row := db.QueryRow("SELECT username, acntname, joint, username2 FROM applications WHERE acntnumber = $1", num)
 	row.Scan(&uname, &acntname, &joint, &uname2)
-	fmt.Println(uname, acntname, joint, uname2)
 	if joint {
 		// Updates appcount from both users in joint account. Adds the account in accounts table.
 		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)

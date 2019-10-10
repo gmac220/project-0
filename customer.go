@@ -147,38 +147,48 @@ func ShowAccounts() {
 // ShowBalance shows the balance of an account the user chooses
 func ShowBalance() {
 	var acntnum int
-	var balance float64
-	var acntname string
 
 	fmt.Printf("What account number do you want to check the balance for?: ")
 	fmt.Scanln(&acntnum)
-	db := OpenDB()
-	defer db.Close()
-	row := db.QueryRow("SELECT balance, acntname FROM accounts WHERE acntnumber = $1", acntnum)
-	row.Scan(&balance, &acntname)
+	balance, acntname := VerifyAccount(acntnum)
 	if acntname == "" {
 		fmt.Println("That account does not exist.")
 	} else {
 		fmt.Println("This is your balance: ", balance)
 	}
-
 	CustomerPage()
+}
+
+// VerifyAccount checks if there is an account with number specified
+func VerifyAccount(accountnumber int) (float64, string) {
+	var balance float64
+	var acntname string
+	db := OpenDB()
+	defer db.Close()
+	row := db.QueryRow("SELECT balance, acntname FROM accounts WHERE acntnumber = $1", accountnumber)
+	row.Scan(&balance, &acntname)
+	if acntname == "" {
+		fmt.Println("That account does not exist.")
+		CustomerPage()
+	}
+	return balance, acntname
 }
 
 // Withdraw takes out money from an account the user chooses
 func Withdraw() {
 	var acntnum int
 	var withdrawal float64
-	var balance float64
+	// var balance float64
 
 	fmt.Printf("What account number would you like to withdraw from: ")
 	fmt.Scanln(&acntnum)
-	fmt.Printf("How much money would you like to withdraw? Ex. 20.02:")
+	balance, _ := VerifyAccount(acntnum)
+	fmt.Printf("How much money would you like to withdraw? Ex. 20.02: ")
 	fmt.Scanln(&withdrawal)
 	db := OpenDB()
 	defer db.Close()
-	row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
-	row.Scan(&balance)
+	// row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
+	// row.Scan(&balance)
 	for withdrawal > balance {
 		fmt.Printf("Not enough money in balance please enter another amount: ")
 		fmt.Scanln(&withdrawal)
@@ -191,16 +201,17 @@ func Withdraw() {
 func Deposit() {
 	var acntnum int
 	var deposit float64
-	var balance float64
+	// var balance float64
 
 	fmt.Printf("What account number would you like to deposit into: ")
 	fmt.Scanln(&acntnum)
-	fmt.Printf("How much money would you like to deposit? Ex. 20.02:")
+	balance, _ := VerifyAccount(acntnum)
+	fmt.Printf("How much money would you like to deposit? Ex. 20.02: ")
 	fmt.Scanln(&deposit)
 	db := OpenDB()
 	defer db.Close()
-	row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
-	row.Scan(&balance)
+	// row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
+	// row.Scan(&balance)
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+deposit, acntnum)
 	CustomerPage()
 }
@@ -240,25 +251,23 @@ func Transfer() {
 	var acntnumwithdraw int
 	var acntnumdeposit int
 	var funds float64
-	var balance float64
 
 	fmt.Printf("What account number would you like to take money out of?: ")
 	fmt.Scanln(&acntnumwithdraw)
+	balance, _ := VerifyAccount(acntnumwithdraw)
 	fmt.Printf("What account number would you like to transfer into?: ")
 	fmt.Scanln(&acntnumdeposit)
+	VerifyAccount(acntnumdeposit)
 	fmt.Printf("How much money would you like to transfer? Ex. 20.02: ")
 	fmt.Scanln(&funds)
 	db := OpenDB()
 	defer db.Close()
-	row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnumwithdraw)
-	row.Scan(&balance)
 	for funds > balance {
 		fmt.Printf("Not enough money in balance please enter another amount: ")
 		fmt.Scanln(&funds)
 	}
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance-funds, acntnumwithdraw)
-	row = db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnumdeposit)
-	row.Scan(&balance)
+	balance, _ = VerifyAccount(acntnumdeposit)
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+funds, acntnumdeposit)
 	CustomerPage()
 }
