@@ -10,7 +10,9 @@ import (
 
 func main() {
 	fmt.Println()
-	fmt.Println("Welcome to Bills FarGO!")
+	fmt.Println("╦ ╦┌─┐┬  ┌─┐┌─┐┌┬┐┌─┐  ┌┬┐┌─┐  ┌┐ ┬┬  ┬  ┌─┐  ┌─┐┌─┐┬─┐┌─┐┌─┐")
+	fmt.Println("║║║├┤ │  │  │ ││││├┤    │ │ │  ├┴┐││  │  └─┐  ├┤ ├─┤├┬┘│ ┬│ │")
+	fmt.Println("╚╩╝└─┘┴─┘└─┘└─┘┴ ┴└─┘   ┴ └─┘  └─┘┴┴─┘┴─┘└─┘  └  ┴ ┴┴└─└─┘└─┘")
 	Selection()
 
 }
