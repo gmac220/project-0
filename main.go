@@ -76,6 +76,7 @@ func SignIn(employee bool) {
 	} else {
 		fmt.Println("Password does not match")
 	}
+	Selection()
 }
 
 // CreateAccount for either a customer or employee
