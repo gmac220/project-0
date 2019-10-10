@@ -178,7 +178,6 @@ func VerifyAccount(accountnumber int) (float64, string) {
 func Withdraw() {
 	var acntnum int
 	var withdrawal float64
-	// var balance float64
 
 	fmt.Printf("What account number would you like to withdraw from: ")
 	fmt.Scanln(&acntnum)
@@ -187,8 +186,6 @@ func Withdraw() {
 	fmt.Scanln(&withdrawal)
 	db := OpenDB()
 	defer db.Close()
-	// row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
-	// row.Scan(&balance)
 	for withdrawal > balance {
 		fmt.Printf("Not enough money in balance please enter another amount: ")
 		fmt.Scanln(&withdrawal)
@@ -201,7 +198,6 @@ func Withdraw() {
 func Deposit() {
 	var acntnum int
 	var deposit float64
-	// var balance float64
 
 	fmt.Printf("What account number would you like to deposit into: ")
 	fmt.Scanln(&acntnum)
@@ -210,8 +206,6 @@ func Deposit() {
 	fmt.Scanln(&deposit)
 	db := OpenDB()
 	defer db.Close()
-	// row := db.QueryRow("SELECT balance FROM accounts WHERE acntnumber = $1", acntnum)
-	// row.Scan(&balance)
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+deposit, acntnum)
 	CustomerPage()
 }

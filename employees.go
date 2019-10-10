@@ -10,6 +10,7 @@ func EmployeePage() {
 	var num int
 	var acntnumber int
 	var username string
+
 	fmt.Println("What do you want to do")
 	fmt.Println("1: Approve")
 	fmt.Println("2: Deny")
@@ -48,7 +49,6 @@ func EmployeePage() {
 
 // Approve the Customer's application
 func Approve(num int) {
-	//var row *sql.Row
 	var uname string
 	var appcount int
 	var acntname string
@@ -98,6 +98,7 @@ func CustomerInfo(username string) {
 	var fname string
 	var lname string
 	var appcount int
+
 	db := OpenDB()
 	defer db.Close()
 	rows, _ := db.Query("SELECT * FROM accounts FULL OUTER JOIN customers on customers.username = accounts.username WHERE customers.username = $1", username)
