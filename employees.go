@@ -27,12 +27,18 @@ func EmployeePage() {
 			" (Please input application number): ")
 		fmt.Scanln(&acntnumber)
 		Approve(acntnumber)
+		EmployeePage()
 	case 2:
 		fmt.Printf("Which customer's application do you want to deny?" +
 			" (Please input application number): ")
 		fmt.Scanln(&acntnumber)
-		DeleteApplication(acntnumber)
-		fmt.Println("Application Denied :(")
+		if CheckApplication(acntnumber) {
+			DeleteApplication(acntnumber)
+			fmt.Println("Application Denied :(")
+		} else {
+			fmt.Println("Application does not exist.")
+		}
+		EmployeePage()
 
 	case 3:
 		fmt.Printf("Which customer's information do you want to look at?" +
@@ -58,25 +64,39 @@ func Approve(num int) {
 
 	db := OpenDB()
 	defer db.Close()
-	row := db.QueryRow("SELECT username, acntname, joint, username2 FROM applications WHERE acntnumber = $1", num)
-	row.Scan(&uname, &acntname, &joint, &uname2)
-	if joint {
-		// Updates appcount from both users in joint account. Adds the account in accounts table.
-		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
-		row.Scan(&appcount)
-		db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname)
-		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname2)
-		row.Scan(&appcount)
-		db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname2)
-		db.Exec("INSERT INTO accounts (acntname, balance, username, username2) VALUES ($1, $2, $3, $4)", "joint"+acntname, 0, uname, uname2)
+	if CheckApplication(num) {
+		row := db.QueryRow("SELECT username, acntname, joint, username2 FROM applications WHERE acntnumber = $1", num)
+		row.Scan(&uname, &acntname, &joint, &uname2)
+		if joint {
+			// Updates appcount from both users in joint account. Adds the account in accounts table.
+			row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
+			row.Scan(&appcount)
+			db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname)
+			row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname2)
+			row.Scan(&appcount)
+			db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname2)
+			db.Exec("INSERT INTO accounts (acntname, balance, username, username2) VALUES ($1, $2, $3, $4)", "joint"+acntname, 0, uname, uname2)
+		} else {
+			row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
+			row.Scan(&appcount)
+			db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname)
+			db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", acntname, 0, uname)
+		}
+		fmt.Println("Application Approved!")
+		DeleteApplication(num)
 	} else {
-		row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
-		row.Scan(&appcount)
-		db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname)
-		db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", acntname, 0, uname)
+		fmt.Println("Application does not exist.")
 	}
-	fmt.Println("Application Approved!")
-	DeleteApplication(num)
+}
+
+// CheckApplication verifies if application exists
+func CheckApplication(num int) bool {
+	var acntnumber int
+	db := OpenDB()
+	defer db.Close()
+	row := db.QueryRow("SELECT acntnumber FROM applications WHERE acntnumber = $1", num)
+	row.Scan(&acntnumber)
+	return acntnumber == num
 }
 
 // DeleteApplication deletes row from applications table
@@ -84,7 +104,6 @@ func DeleteApplication(num int) {
 	db := OpenDB()
 	defer db.Close()
 	db.Exec("DELETE FROM applications WHERE acntnumber = $1", num)
-	EmployeePage()
 }
 
 // CustomerInfo looks at all of customers account information by passing in their username

@@ -117,18 +117,16 @@ func JointApp(username string, firstname string, lastname string, joint bool) {
 
 // CheckCustomer verifies if the customer exists
 func CheckCustomer(username string) (string, string, string) {
-	var uname2 string
-	var fname2 string
-	var lname2 string
-	var appcnt int
-	var pw string
+	var uname string
+	var fname string
+	var lname string
 
 	db := OpenDB()
 	defer db.Close()
-	row := db.QueryRow("SELECT * FROM customers WHERE username = $1", username)
-	row.Scan(&uname2, &pw, &fname2, &lname2, &appcnt)
+	row := db.QueryRow("SELECT username, firstname, lastname FROM customers WHERE username = $1", username)
+	row.Scan(&uname, &fname, &lname)
 
-	return uname2, fname2, lname2
+	return uname, fname, lname
 }
 
 // ShowAccounts lists out the accounts the user currently has
@@ -137,18 +135,22 @@ func ShowAccounts() {
 	var acntname string
 	var balance float64
 	var username string
+	var username2 string
 
 	db := OpenDB()
 	defer db.Close()
 	//loop through both accounts and joint accounts
 	fmt.Println("-------------------------YOUR ACCOUNTS-------------------------")
 	fmt.Println()
-	rows, _ := db.Query("SELECT acntnumber, balance, acntname, username FROM accounts WHERE username = $1 OR username2 = $2", cusername, cusername)
+	rows, _ := db.Query("SELECT acntnumber, balance, acntname, username, username2 FROM accounts WHERE username = $1 OR username2 = $2", cusername, cusername)
 	for rows.Next() {
-
-		rows.Scan(&acntnumber, &balance, &acntname, &username)
-		if username != cusername {
+		username = ""
+		username2 = ""
+		rows.Scan(&acntnumber, &balance, &acntname, &username, &username2)
+		if username != cusername && username2 != "" {
 			fmt.Println("Account #:", acntnumber, "|Account name:", acntname, "|Balance:", balance, "|Other Account Holder:", username)
+		} else if username2 != cusername && username2 != "" {
+			fmt.Println("Account #:", acntnumber, "|Account name:", acntname, "|Balance:", balance, "|Other Account Holder:", username2)
 		} else {
 			fmt.Println("Account #:", acntnumber, "|Account name:", acntname, "|Balance:", balance)
 		}
@@ -159,18 +161,31 @@ func ShowAccounts() {
 	CustomerPage()
 }
 
+// CheckOwnAccount verifies if the customer owns the account
+func CheckOwnAccount(num int) bool {
+	var username string
+	var username2 string
+
+	db := OpenDB()
+	defer db.Close()
+	row := db.QueryRow("SELECT username, username2 FROM accounts WHERE acntnumber = $1", num)
+	row.Scan(&username, &username2)
+	return cusername == username || cusername == username2
+}
+
 // ShowBalance shows the balance of an account the user chooses
 func ShowBalance() {
 	var acntnum int
 
 	fmt.Printf("What account number do you want to check the balance for?: ")
 	fmt.Scanln(&acntnum)
-	balance, acntname := VerifyAccount(acntnum)
-	if acntname == "" {
-		fmt.Println("That account does not exist.")
-	} else {
+	balance, _ := VerifyAccount(acntnum)
+	if CheckOwnAccount(acntnum) {
 		fmt.Println("This is your balance: ", balance)
+	} else {
+		fmt.Println("You do not have access to this account.")
 	}
+
 	CustomerPage()
 }
 
@@ -197,16 +212,20 @@ func Withdraw() {
 	fmt.Printf("What account number would you like to withdraw from: ")
 	fmt.Scanln(&acntnum)
 	balance, _ := VerifyAccount(acntnum)
-	fmt.Printf("How much money would you like to withdraw? Ex. 20.02: ")
-	fmt.Scanln(&withdrawal)
-	db := OpenDB()
-	defer db.Close()
-	for withdrawal > balance {
-		fmt.Printf("Not enough money in balance please enter another amount: ")
+	if CheckOwnAccount(acntnum) {
+		fmt.Printf("How much money would you like to withdraw? Ex. 20.02: ")
 		fmt.Scanln(&withdrawal)
+		db := OpenDB()
+		defer db.Close()
+		for withdrawal > balance {
+			fmt.Printf("Not enough money in balance please enter another amount: ")
+			fmt.Scanln(&withdrawal)
+		}
+		db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance-withdrawal, acntnum)
+		fmt.Println("Withdraw Successful!")
+	} else {
+		fmt.Println("You do not have access to this account.")
 	}
-	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance-withdrawal, acntnum)
-	fmt.Println("Withdraw Successful!")
 	CustomerPage()
 }
 
@@ -218,12 +237,17 @@ func Deposit() {
 	fmt.Printf("What account number would you like to deposit into: ")
 	fmt.Scanln(&acntnum)
 	balance, _ := VerifyAccount(acntnum)
-	fmt.Printf("How much money would you like to deposit? Ex. 20.02: ")
-	fmt.Scanln(&deposit)
-	db := OpenDB()
-	defer db.Close()
-	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+deposit, acntnum)
-	fmt.Println("Deposit Successful!")
+	if CheckOwnAccount(acntnum) {
+		fmt.Printf("How much money would you like to deposit? Ex. 20.02: ")
+		fmt.Scanln(&deposit)
+		db := OpenDB()
+		defer db.Close()
+		db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+deposit, acntnum)
+		fmt.Println("Deposit Successful!")
+	} else {
+		fmt.Println("You do not have access to this account.")
+	}
+
 	CustomerPage()
 }
 
@@ -269,20 +293,25 @@ func Transfer() {
 	fmt.Printf("What account number would you like to take money out of?: ")
 	fmt.Scanln(&acntnumwithdraw)
 	balance, _ := VerifyAccount(acntnumwithdraw)
-	fmt.Printf("What account number would you like to transfer into?: ")
-	fmt.Scanln(&acntnumdeposit)
-	VerifyAccount(acntnumdeposit)
-	fmt.Printf("How much money would you like to transfer? Ex. 20.02: ")
-	fmt.Scanln(&funds)
-	db := OpenDB()
-	defer db.Close()
-	for funds > balance {
-		fmt.Printf("Not enough money in balance please enter another amount: ")
+	if CheckOwnAccount(acntnumwithdraw) {
+		fmt.Printf("What account number would you like to transfer into?: ")
+		fmt.Scanln(&acntnumdeposit)
+		VerifyAccount(acntnumdeposit)
+		fmt.Printf("How much money would you like to transfer? Ex. 20.02: ")
 		fmt.Scanln(&funds)
+		db := OpenDB()
+		defer db.Close()
+		for funds > balance {
+			fmt.Printf("Not enough money in balance please enter another amount: ")
+			fmt.Scanln(&funds)
+		}
+		db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance-funds, acntnumwithdraw)
+		balance, _ = VerifyAccount(acntnumdeposit)
+		db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+funds, acntnumdeposit)
+		fmt.Println("Transfer Successful!")
+	} else {
+		fmt.Println("You do not have access to this account.")
 	}
-	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance-funds, acntnumwithdraw)
-	balance, _ = VerifyAccount(acntnumdeposit)
-	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+funds, acntnumdeposit)
-	fmt.Println("Transfer Successful!")
+
 	CustomerPage()
 }
