@@ -121,10 +121,11 @@ func CustomerInfo(username string) {
 			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance, "|Other Account Holder:", uname)
 		} else if username == uname && uname2 != "" {
 			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance, "|Other Account Holder:", uname2)
-		} else {
+		} else if uname != "" || uname2 != "" {
 			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance)
+		} else {
+			fmt.Println()
 		}
-
 	}
 	fmt.Println()
 	fmt.Println("---------------------------------------------------------------------------------")
