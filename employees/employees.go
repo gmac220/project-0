@@ -1,8 +1,11 @@
-package main
+package employees
 
 import (
 	"fmt"
+	"log"
 	"os"
+
+	"github.com/gmac220/project-0/opendb"
 )
 
 // EmployeePage prompts the employee what they could do and asks them to pick a choice.
@@ -16,8 +19,7 @@ func EmployeePage() {
 	fmt.Println("2: Deny")
 	fmt.Println("3: View Customer Info")
 	fmt.Println("4: Show Applications")
-	fmt.Println("5: Logout")
-	fmt.Println("6: Exit")
+	fmt.Println("5: Exit")
 	fmt.Printf("Please type in a number: ")
 	fmt.Scanln(&num)
 
@@ -48,8 +50,6 @@ func EmployeePage() {
 	case 4:
 		Applications()
 	case 5:
-		main()
-	case 6:
 		os.Exit(0)
 	}
 }
@@ -61,7 +61,7 @@ func Approve(num int) {
 	var joint bool
 	var uname2 string
 
-	db := OpenDB()
+	db := opendb.OpenDB()
 	defer db.Close()
 	if CheckApplication(num) {
 		row := db.QueryRow("SELECT username, acntname, joint, username2 FROM applications WHERE acntnumber = $1", num)
@@ -81,7 +81,7 @@ func Approve(num int) {
 // CheckApplication verifies if application exists
 func CheckApplication(num int) bool {
 	var acntnumber int
-	db := OpenDB()
+	db := opendb.OpenDB()
 	defer db.Close()
 	row := db.QueryRow("SELECT acntnumber FROM applications WHERE acntnumber = $1", num)
 	row.Scan(&acntnumber)
@@ -90,7 +90,7 @@ func CheckApplication(num int) bool {
 
 // DeleteApplication deletes row from applications table
 func DeleteApplication(num int) {
-	db := OpenDB()
+	db := opendb.OpenDB()
 	defer db.Close()
 	db.Exec("DELETE FROM applications WHERE acntnumber = $1", num)
 }
@@ -107,17 +107,22 @@ func CustomerInfo(username string) {
 	var lname string
 	var otheruname string
 
-	db := OpenDB()
+	db := opendb.OpenDB()
 	defer db.Close()
-	rows, _ := db.Query("SELECT * FROM accounts FULL OUTER JOIN customers on customers.username = accounts.username OR customers.username = accounts.username2 WHERE customers.username = $1", username)
+	rows, err := db.Query("SELECT * FROM accounts FULL OUTER JOIN customers on customers.username = accounts.username OR customers.username = accounts.username2 WHERE customers.username = $1", username)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("---------------------------" + username + "'s INFORMATION------------------------------")
 	fmt.Println()
 	for rows.Next() {
 		rows.Scan(&acntnumber, &acntname, &balance, &uname, &uname2, &otheruname, &pw, &fname, &lname)
-		if username == uname {
-			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance, "|Username:", uname)
+		if uname2 == username {
+			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance, "|Other Account Holder:", uname)
+		} else if username == uname && uname2 != "" {
+			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance, "|Other Account Holder:", uname2)
 		} else {
-			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance, "|Username:", uname2)
+			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance)
 		}
 
 	}
@@ -138,11 +143,14 @@ func Applications() {
 	var fname2 string
 	var lname2 string
 
-	db := OpenDB()
+	db := opendb.OpenDB()
 	defer db.Close()
 	fmt.Println("----------------------LISTED APPLICATIONS----------------------")
 	fmt.Println()
-	rows, _ := db.Query("SELECT * FROM applications")
+	rows, err := db.Query("SELECT * FROM applications")
+	if err != nil {
+		log.Fatal(err)
+	}
 	for rows.Next() {
 		rows.Scan(&acntnum, &uname, &fname, &lname, &acntname, &joint, &uname2, &fname2, &lname2)
 		if joint {
