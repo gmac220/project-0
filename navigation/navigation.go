@@ -78,24 +78,12 @@ func Selection() {
 }
 
 // SignIn verifies if customer or employee credentials match database
-//func SignIn(employee bool) {
 func SignIn(username string, password string, employee bool) {
-
-	// var username string
-	// var pass string
 	var usernamedb string
 	var passdb string
 	var fname string
 	var lname string
 	var row *sql.Row
-
-	// fmt.Printf("Enter username: ")
-	// fmt.Scanln(&username)
-	// fmt.Printf("Enter password: ")
-	// SttyCommand("-echo")
-	// fmt.Scanln(&pass)
-	// SttyCommand("echo")
-	// fmt.Println()
 	db := opendb.OpenDB()
 	defer db.Close()
 	if employee {
@@ -120,29 +108,9 @@ func SignIn(username string, password string, employee bool) {
 }
 
 // CreateAccount for either a customer or employee
-//func CreateAccount() {
 func CreateAccount(firstname string, lastname string, username string, password string, choice string) {
-	// var choice string
-	// var username string
-	// var pw string
-	// var firstname string
-	// var lastname string
-
 	db := opendb.OpenDB()
 	defer db.Close()
-	// fmt.Printf("Enter your firstname: ")
-	// fmt.Scanln(&firstname)
-	// fmt.Printf("Enter your lastname: ")
-	// fmt.Scanln(&lastname)
-	// fmt.Printf("Enter username: ")
-	// fmt.Scanln(&username)
-	// fmt.Printf("Enter password: ")
-	// SttyCommand("-echo")
-	// fmt.Scanln(&pw)
-	// SttyCommand("echo")
-	// fmt.Println()
-	// fmt.Printf("Is this Account for a Customer or an Employee? type c or e: ")
-	// fmt.Scanln(&choice)
 	switch choice {
 	case "c":
 		db.Exec("INSERT INTO customers (username, password, firstname, lastname)"+

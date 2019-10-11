@@ -109,14 +109,11 @@ func ShowCustomerPrompts() {
 }
 
 // Apply adds to applications table
-//func Apply(username string, firstname string, lastname string) {
 func Apply(username string, firstname string, lastname string, acntname string) {
 	//var acntname string
 
 	db := opendb.OpenDB()
 	defer db.Close()
-	// fmt.Printf("What type of account do you want to open? checking, savings, other...: ")
-	// fmt.Scanln(&acntname)
 	db.Exec("INSERT INTO applications"+
 		"(username, firstname, lastname, acntname, joint, username2, firstname2, lastname2)"+
 		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
@@ -126,15 +123,10 @@ func Apply(username string, firstname string, lastname string, acntname string) 
 }
 
 // JointApp adds to applications table
-//func JointApp(username string, firstname string, lastname string) {
 func JointApp(username string, firstname string, lastname string, acntname string, username2 string) {
 
 	db := opendb.OpenDB()
 	defer db.Close()
-	// fmt.Printf("What type of account do you want to open? checking, savings, other...: ")
-	// fmt.Scanln(&acntname)
-	// fmt.Printf("What user do you want to share an account with? Please input username of that user: ")
-	// fmt.Scanln(&uname2)
 	uname2, fname2, lname2 := CheckCustomer(username2)
 	for uname2 == "" {
 		fmt.Printf("This user does not exist please input a valid user: ")
@@ -164,7 +156,6 @@ func CheckCustomer(username string) (string, string, string) {
 }
 
 // ShowAccounts lists out the accounts the user currently has
-//func ShowAccounts() {
 func ShowAccounts(username string) {
 	var acntnumber int
 	var acntname string
@@ -212,12 +203,7 @@ func CheckOwnAccount(num int) bool {
 }
 
 // ShowBalance shows the balance of an account the user chooses
-//func ShowBalance() {
 func ShowBalance(acntnum int) {
-	//var acntnum int
-
-	// fmt.Printf("What account number do you want to check the balance for?: ")
-	// fmt.Scanln(&acntnum)
 	balance, _ := VerifyAccount(acntnum)
 	if CheckOwnAccount(acntnum) {
 		fmt.Println("This is your balance: ", balance)
@@ -245,17 +231,7 @@ func VerifyAccount(accountnumber int) (float64, string) {
 }
 
 // Withdraw takes out money from an account the user chooses
-//func Withdraw() {
 func Withdraw(acntnum int, withdrawal float64, balance float64) {
-	//var acntnum int
-	//var withdrawal float64
-
-	// fmt.Printf("What account number would you like to withdraw from: ")
-	// fmt.Scanln(&acntnum)
-	// balance, _ := VerifyAccount(acntnum)
-	// if CheckOwnAccount(acntnum) {
-	// 	fmt.Printf("How much money would you like to withdraw? Ex. 20.02: ")
-	// 	fmt.Scanln(&withdrawal)
 	db := opendb.OpenDB()
 	defer db.Close()
 	for withdrawal > balance {
@@ -264,37 +240,17 @@ func Withdraw(acntnum int, withdrawal float64, balance float64) {
 	}
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance-withdrawal, acntnum)
 	fmt.Println("Withdraw Successful!")
-	// } else {
-	// 	fmt.Println("You do not have access to this account.")
-	// }
-	//CustomerPage()
 }
 
 // Deposit adds money to an account the user chooses
-//func Deposit() {
 func Deposit(acntnum int, deposit float64, balance float64) {
-	//var acntnum int
-	//var deposit float64
-
-	// fmt.Printf("What account number would you like to deposit into: ")
-	// fmt.Scanln(&acntnum)
-	// balance, _ := VerifyAccount(acntnum)
-	// if CheckOwnAccount(acntnum) {
-	// 	fmt.Printf("How much money would you like to deposit? Ex. 20.02: ")
-	// 	fmt.Scanln(&deposit)
 	db := opendb.OpenDB()
 	defer db.Close()
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balance+deposit, acntnum)
 	fmt.Println("Deposit Successful!")
-	// } else {
-	// 	fmt.Println("You do not have access to this account.")
-	// }
-
-	//CustomerPage()
 }
 
 // ShowPendingApps shows the amount of applications the user has applied to
-// func ShowPendingApps() {
 func ShowPendingApps(username string) {
 	var uname string
 	var acntnum int
@@ -328,21 +284,9 @@ func ShowPendingApps(username string) {
 }
 
 // Transfer takes money from one account to another account available in the database
-//func Transfer() {
 func Transfer(acntnumwithdraw int, acntnumdeposit int, balanceinput float64, fundsinput float64) {
-	// var acntnumwithdraw int
-	// var acntnumdeposit int
 	var funds float64 = fundsinput
 
-	// fmt.Printf("What account number would you like to take money out of?: ")
-	// fmt.Scanln(&acntnumwithdraw)
-	// balance, _ := VerifyAccount(acntnumwithdraw)
-	// if CheckOwnAccount(acntnumwithdraw) {
-	// 	fmt.Printf("What account number would you like to transfer into?: ")
-	// 	fmt.Scanln(&acntnumdeposit)
-	// 	VerifyAccount(acntnumdeposit)
-	// 	fmt.Printf("How much money would you like to transfer? Ex. 20.02: ")
-	// 	fmt.Scanln(&funds)
 	db := opendb.OpenDB()
 	defer db.Close()
 	for funds > balanceinput {
@@ -353,9 +297,4 @@ func Transfer(acntnumwithdraw int, acntnumdeposit int, balanceinput float64, fun
 	balancedeposit, _ := VerifyAccount(acntnumdeposit)
 	db.Exec("UPDATE accounts SET balance = $1 WHERE acntnumber = $2", balancedeposit+funds, acntnumdeposit)
 	fmt.Println("Transfer Successful!")
-	// } else {
-	// 	fmt.Println("You do not have access to this account.")
-	// }
-
-	// ShowCustomerPrompts()
 }
