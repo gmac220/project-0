@@ -2,8 +2,7 @@ create table customers(
     username varchar primary key,
     password varchar NOT NULL,
     firstname varchar NOT NULL,
-    lastname varchar NOT NULL,
-    appcount integer NOT NULL
+    lastname varchar NOT NULL
 );
 
 create table employees(

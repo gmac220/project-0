@@ -48,7 +48,6 @@ func SignIn(employee bool) {
 	var passdb string
 	var fname string
 	var lname string
-	var appcount int
 	var row *sql.Row
 
 	fmt.Printf("Enter username: ")
@@ -61,11 +60,11 @@ func SignIn(employee bool) {
 	db := OpenDB()
 	defer db.Close()
 	if employee {
-		row = db.QueryRow("SELECT * FROM employees WHERE username = $1", username)
-		row.Scan(&usernamedb, &passdb, &fname, &lname)
+		row = db.QueryRow("SELECT password FROM employees WHERE username = $1", username)
+		row.Scan(&passdb)
 	} else {
 		row = db.QueryRow("SELECT * FROM customers WHERE username = $1", username)
-		row.Scan(&usernamedb, &passdb, &fname, &lname, &appcount)
+		row.Scan(&usernamedb, &passdb, &fname, &lname)
 	}
 
 	if passdb == pass {
@@ -77,8 +76,8 @@ func SignIn(employee bool) {
 		}
 	} else {
 		fmt.Println("Password does not match")
+		Selection()
 	}
-	Selection()
 }
 
 // CreateAccount for either a customer or employee
@@ -106,8 +105,8 @@ func CreateAccount() {
 	fmt.Scanln(&choice)
 	switch choice {
 	case "c":
-		db.Exec("INSERT INTO customers (username, password, firstname, lastname, appcount)"+
-			"VALUES ($1, $2, $3, $4, 0)", username, pw, firstname, lastname)
+		db.Exec("INSERT INTO customers (username, password, firstname, lastname)"+
+			"VALUES ($1, $2, $3, $4)", username, pw, firstname, lastname)
 		CustomerInit(username, firstname, lastname)
 
 	case "e":

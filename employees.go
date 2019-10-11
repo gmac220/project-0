@@ -57,7 +57,6 @@ func EmployeePage() {
 // Approve the Customer's application
 func Approve(num int) {
 	var uname string
-	var appcount int
 	var acntname string
 	var joint bool
 	var uname2 string
@@ -68,18 +67,8 @@ func Approve(num int) {
 		row := db.QueryRow("SELECT username, acntname, joint, username2 FROM applications WHERE acntnumber = $1", num)
 		row.Scan(&uname, &acntname, &joint, &uname2)
 		if joint {
-			// Updates appcount from both users in joint account. Adds the account in accounts table.
-			row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
-			row.Scan(&appcount)
-			db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname)
-			row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname2)
-			row.Scan(&appcount)
-			db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname2)
 			db.Exec("INSERT INTO accounts (acntname, balance, username, username2) VALUES ($1, $2, $3, $4)", "joint"+acntname, 0, uname, uname2)
 		} else {
-			row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname)
-			row.Scan(&appcount)
-			db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount-1, uname)
 			db.Exec("INSERT INTO accounts (acntname, balance, username) VALUES ($1, $2, $3)", acntname, 0, uname)
 		}
 		fmt.Println("Application Approved!")
@@ -116,7 +105,6 @@ func CustomerInfo(username string) {
 	var pw string
 	var fname string
 	var lname string
-	var appcount int
 	var otheruname string
 
 	db := OpenDB()
@@ -125,7 +113,7 @@ func CustomerInfo(username string) {
 	fmt.Println("---------------------------" + username + "'s INFORMATION------------------------------")
 	fmt.Println()
 	for rows.Next() {
-		rows.Scan(&acntnumber, &acntname, &balance, &uname, &uname2, &otheruname, &pw, &fname, &lname, &appcount)
+		rows.Scan(&acntnumber, &acntname, &balance, &uname, &uname2, &otheruname, &pw, &fname, &lname)
 		if username == uname {
 			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance, "|Username:", uname)
 		} else {

@@ -63,7 +63,6 @@ func CustomerPage() {
 // Apply adds to applications table
 func Apply(username string, firstname string, lastname string, joint bool) {
 	var acntname string
-	var appcount int
 
 	db := OpenDB()
 	defer db.Close()
@@ -73,9 +72,6 @@ func Apply(username string, firstname string, lastname string, joint bool) {
 		"(username, firstname, lastname, acntname, joint, username2, firstname2, lastname2)"+
 		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
 		username, firstname, lastname, acntname, joint, "N/A", "N/A", "N/A")
-	row := db.QueryRow("SELECT appcount FROM customers WHERE username = $1", username)
-	row.Scan(&appcount)
-	db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount+1, username)
 	fmt.Println("Application Successful!")
 	CustomerPage()
 }
@@ -86,7 +82,6 @@ func JointApp(username string, firstname string, lastname string, joint bool) {
 	var fname2 string
 	var lname2 string
 	var acntname string
-	var appcount int
 
 	db := OpenDB()
 	defer db.Close()
@@ -100,13 +95,6 @@ func JointApp(username string, firstname string, lastname string, joint bool) {
 		fmt.Scanln(&uname2)
 		uname2, fname2, lname2 = CheckCustomer(uname2)
 	}
-
-	row := db.QueryRow("SELECT appcount FROM customers WHERE username = $1", username)
-	row.Scan(&appcount)
-	db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount+1, username)
-	row = db.QueryRow("SELECT appcount FROM customers WHERE username = $1", uname2)
-	row.Scan(&appcount)
-	db.Exec("UPDATE customers SET appcount = $1 WHERE username = $2", appcount+1, uname2)
 	db.Exec("INSERT INTO applications"+
 		"(username, firstname, lastname, acntname, joint, username2, firstname2, lastname2)"+
 		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
