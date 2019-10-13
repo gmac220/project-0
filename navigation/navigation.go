@@ -47,7 +47,15 @@ func Selection() {
 		fmt.Scanln(&pass)
 		SttyCommand("echo")
 		fmt.Println()
-		SignIn(username, pass, false)
+		usernamedb, passdb, fname, lname := SignIn(username, pass, false)
+		if passdb == pass {
+			fmt.Println("Login Successful!")
+			customer.SetCustomerVars(usernamedb, fname, lname)
+		} else {
+			fmt.Println("Password does not match")
+			Selection()
+		}
+
 	case 2:
 		fmt.Printf("Enter username: ")
 		fmt.Scanln(&username)
@@ -56,7 +64,14 @@ func Selection() {
 		fmt.Scanln(&pass)
 		SttyCommand("echo")
 		fmt.Println()
-		SignIn(username, pass, true)
+		_, passdb, _, _ := SignIn(username, pass, true)
+		if passdb == pass {
+			fmt.Println("Login Successful!")
+			employees.EmployeePage()
+		} else {
+			fmt.Println("Password does not match")
+			Selection()
+		}
 	case 3:
 		fmt.Printf("Enter your firstname: ")
 		fmt.Scanln(&firstname)
@@ -72,13 +87,23 @@ func Selection() {
 		fmt.Printf("Is this Account for a Customer or an Employee? type c or e: ")
 		fmt.Scanln(&choice)
 		CreateAccount(firstname, lastname, username, pass, choice)
+		switch choice {
+		case "c":
+			customer.SetCustomerVars(username, firstname, lastname)
+
+		case "e":
+			employees.EmployeePage()
+		}
 	case 4:
 		os.Exit(0)
+	default:
+		fmt.Println("Choice does not exist.")
+		Selection()
 	}
 }
 
 // SignIn verifies if customer or employee credentials match database
-func SignIn(username string, password string, employee bool) {
+func SignIn(username string, password string, employee bool) (string, string, string, string) {
 	var usernamedb string
 	var passdb string
 	var fname string
@@ -87,24 +112,13 @@ func SignIn(username string, password string, employee bool) {
 	db := opendb.OpenDB()
 	defer db.Close()
 	if employee {
-		row = db.QueryRow("SELECT password FROM employees WHERE username = $1", username)
-		row.Scan(&passdb)
+		row = db.QueryRow("SELECT * FROM employees WHERE username = $1", username)
+		row.Scan(&usernamedb, &passdb, &fname, &lname)
 	} else {
 		row = db.QueryRow("SELECT * FROM customers WHERE username = $1", username)
 		row.Scan(&usernamedb, &passdb, &fname, &lname)
 	}
-
-	if passdb == password {
-		fmt.Println("Login Successful!")
-		if employee {
-			employees.EmployeePage()
-		} else {
-			customer.SetCustomerVars(usernamedb, fname, lname)
-		}
-	} else {
-		fmt.Println("Password does not match")
-		Selection()
-	}
+	return usernamedb, passdb, fname, lname
 }
 
 // CreateAccount for either a customer or employee
@@ -115,12 +129,11 @@ func CreateAccount(firstname string, lastname string, username string, password 
 	case "c":
 		db.Exec("INSERT INTO customers (username, password, firstname, lastname)"+
 			"VALUES ($1, $2, $3, $4)", username, password, firstname, lastname)
-		customer.SetCustomerVars(username, firstname, lastname)
-
+		//customer.SetCustomerVars(username, firstname, lastname)
 	case "e":
 		db.Exec("INSERT INTO employees (username, password, firstname, lastname)"+
 			"VALUES ($1, $2, $3, $4)", username, password, firstname, lastname)
-		employees.EmployeePage()
+		//employees.EmployeePage()
 	}
 }
 

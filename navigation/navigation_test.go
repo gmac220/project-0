@@ -1,86 +1,91 @@
 package navigation
 
-import "testing"
+import (
+	"log"
+	"testing"
 
-func TestWelcome(t *testing.T) {
-	tests := []struct {
-		name string
-	}{
-		// TODO: Add test cases.
+	"github.com/gmac220/project-0/opendb"
+)
+
+func TestEmployeeCreateAccount(t *testing.T) {
+	var fname string
+	var lname string
+	var uname string
+	var pw string
+	firstnameinput := "Ro"
+	lastnameinput := "Bert"
+	usernameinput := "robert"
+	passwordinput := "r"
+
+	CreateAccount(firstnameinput, lastnameinput, usernameinput, passwordinput, "e")
+	db := opendb.OpenDB()
+	row := db.QueryRow("SELECT * FROM employees WHERE username = $1", usernameinput)
+	row.Scan(&uname, &pw, &fname, &lname)
+	if firstnameinput == fname && lastnameinput == lname && usernameinput == uname && passwordinput == pw {
+		log.Printf("TestEmployeeCreateAccount Passed")
+	} else {
+		log.Fatal("Inputs do not match. Firstname input:", firstnameinput, "Actual firstname:",
+			fname, "Lastname input:", lastnameinput, "Actual lastname:", lname,
+			"Username input:", usernameinput, "Actual username:", uname,
+			"Password input:", passwordinput, "Actual password:", pw)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			Welcome()
-		})
+
+}
+
+func TestEmployeeSignIn(t *testing.T) {
+	firstnameinput := "Ro"
+	lastnameinput := "Bert"
+	usernameinput := "robert"
+	passwordinput := "r"
+
+	usernamedb, passdb, fname, lname := SignIn("robert", "r", true)
+	if firstnameinput == fname && lastnameinput == lname && usernameinput == usernamedb && passwordinput == passdb {
+		log.Printf("TestEmployeeSignIn Passed")
+	} else {
+		log.Fatal("Inputs do not match. Firstname input:", firstnameinput, "Actual firstname:",
+			fname, "Lastname input:", lastnameinput, "Actual lastname:", lname,
+			"Username input:", usernameinput, "Actual username:", usernamedb,
+			"Password input:", passwordinput, "Actual password:", passdb)
 	}
 }
 
-func TestSelection(t *testing.T) {
-	tests := []struct {
-		name string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			Selection()
-		})
+func TestCustomerCreateAccount(t *testing.T) {
+	var fname string
+	var lname string
+	var uname string
+	var pw string
+	firstnameinput := "Bob"
+	lastnameinput := "Truss"
+	usernameinput := "bobt"
+	passwordinput := "b"
+
+	CreateAccount(firstnameinput, lastnameinput, usernameinput, passwordinput, "c")
+	db := opendb.OpenDB()
+	row := db.QueryRow("SELECT * FROM customers WHERE username = $1", usernameinput)
+	row.Scan(&uname, &pw, &fname, &lname)
+	if firstnameinput == fname && lastnameinput == lname && usernameinput == uname && passwordinput == pw {
+		log.Printf("TestCustomerCreateAccount Passed")
+	} else {
+		log.Fatal("Inputs do not match. Firstname input:", firstnameinput, "Actual firstname:",
+			fname, "Lastname input:", lastnameinput, "Actual lastname:", lname,
+			"Username input:", usernameinput, "Actual username:", uname,
+			"Password input:", passwordinput, "Actual password:", pw)
 	}
 }
 
-func TestSignIn(t *testing.T) {
-	type args struct {
-		username string
-		password string
-		employee bool
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			SignIn(tt.args.username, tt.args.password, tt.args.employee)
-		})
-	}
-}
+func TestCustomerSignIn(t *testing.T) {
+	firstnameinput := "Bob"
+	lastnameinput := "Truss"
+	usernameinput := "bobt"
+	passwordinput := "b"
 
-func TestCreateAccount(t *testing.T) {
-	type args struct {
-		firstname string
-		lastname  string
-		username  string
-		password  string
-		choice    string
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			CreateAccount(tt.args.firstname, tt.args.lastname, tt.args.username, tt.args.password, tt.args.choice)
-		})
-	}
-}
-
-func TestSttyCommand(t *testing.T) {
-	type args struct {
-		flag string
-	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			SttyCommand(tt.args.flag)
-		})
+	usernamedb, passdb, fname, lname := SignIn("bobt", "b", false)
+	if firstnameinput == fname && lastnameinput == lname && usernameinput == usernamedb && passwordinput == passdb {
+		log.Printf("TestCustomerSignIn Passed")
+	} else {
+		log.Fatal("Inputs do not match. Firstname input:", firstnameinput, "Actual firstname:",
+			fname, "Lastname input:", lastnameinput, "Actual lastname:", lname,
+			"Username input:", usernameinput, "Actual username:", usernamedb,
+			"Password input:", passwordinput, "Actual password:", passdb)
 	}
 }

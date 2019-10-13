@@ -51,6 +51,9 @@ func EmployeePage() {
 		Applications()
 	case 5:
 		os.Exit(0)
+		// default:
+		// 	fmt.Println("Choice does not exist.")
+		// 	EmployeePage()
 	}
 }
 

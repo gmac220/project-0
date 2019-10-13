@@ -105,6 +105,9 @@ func ShowCustomerPrompts() {
 		ShowPendingApps(cusername)
 	case 9:
 		os.Exit(0)
+		// default:
+		// 	fmt.Println("Choice does not exist.")
+		// 	ShowCustomerPrompts()
 	}
 }
 
