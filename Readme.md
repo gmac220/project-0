@@ -1,7 +1,8 @@
 # Bills FarGO
 ## Godfrey Macasero
 A banking app that has two users customers and employees. 
-This app simulates banking on the terminal with CLI like commands that allows basic bank functions like withdrawing, depositing, and linking to your different accounts with what you have.
+This app simulates banking on the terminal that has interactive text menus.
+It is a simple banking application that emulates things you would be able to do at the bank like withdrawing, depositing, and transfering money to your different accounts.
 
 # User Stories
 - [x] Customers should be able to:
@@ -17,7 +18,7 @@ This app simulates banking on the terminal with CLI like commands that allows ba
     - [x] Authenticate (login) with that usename and password
 - [x] All account and user information should persist to files or a database
 - [x] Usable from command line args, interactive text menus, or through HTTP
-- [] Basic validation and testing
+- [x] Basic validation and testing
 
 
 # Instructions
@@ -45,3 +46,25 @@ If you want to look into your table in postgres use this command
 ```bash
 docker exec -it runningbillsfargo psql -U postgres
 ```
+
+# Running the program
+```bash
+go run main.go
+```
+
+# Testing
+Testing commands for navigation package
+```bash
+go test ./navigation
+```
+
+Testing commands for customer package
+```bash
+go test ./customer
+```
+
+Testing commands for employees package
+```bash
+go test ./employees
+```
+

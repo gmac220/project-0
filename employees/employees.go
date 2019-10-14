@@ -33,7 +33,8 @@ func EmployeePage() {
 		fmt.Printf("Which customer's application do you want to deny?" +
 			" (Please input application number): ")
 		fmt.Scanln(&acntnumber)
-		if CheckApplication(acntnumber) {
+		check, _ := CheckApplication(acntnumber)
+		if check {
 			DeleteApplication(acntnumber)
 			fmt.Println("Application Denied :(")
 		} else {
@@ -63,7 +64,8 @@ func Approve(num int) {
 
 	db := opendb.OpenDB()
 	defer db.Close()
-	if CheckApplication(num) {
+	check, _ := CheckApplication(num)
+	if check {
 		row := db.QueryRow("SELECT username, acntname, joint, username2 FROM applications WHERE acntnumber = $1", num)
 		row.Scan(&uname, &acntname, &joint, &uname2)
 		if joint {
@@ -79,14 +81,14 @@ func Approve(num int) {
 }
 
 // CheckApplication verifies if application exists
-func CheckApplication(num int) bool {
+func CheckApplication(num int) (bool, int) {
 	var acntnumber int
 
 	db := opendb.OpenDB()
 	defer db.Close()
 	row := db.QueryRow("SELECT acntnumber FROM applications WHERE acntnumber = $1", num)
 	row.Scan(&acntnumber)
-	return acntnumber == num
+	return acntnumber == num, acntnumber
 }
 
 // DeleteApplication deletes row from applications table

@@ -1,57 +1,56 @@
 package employees
 
-// import "testing"
+import (
+	"log"
+	"testing"
 
-// func TestCheckApplication(t *testing.T) {
-// 	type args struct {
-// 		num int
-// 	}
-// 	tests := []struct {
-// 		name string
-// 		args args
-// 		want bool
-// 	}{
-// 		// TODO: Add test cases.
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			if got := CheckApplication(tt.args.num); got != tt.want {
-// 				t.Errorf("CheckApplication() = %v, want %v", got, tt.want)
-// 			}
-// 		})
-// 	}
-// }
+	"github.com/gmac220/project-0/opendb"
+)
 
-// func TestApprove(t *testing.T) {
-// 	type args struct {
-// 		num int
-// 	}
-// 	tests := []struct {
-// 		name string
-// 		args args
-// 	}{
-// 		// TODO: Add test cases.
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			Approve(tt.args.num)
-// 		})
-// 	}
-// }
+// TestCheckApplication checks if application testing is correct
+func TestCheckApplication(t *testing.T) {
+	num := 33
+	check, numdb := CheckApplication(num)
+	if check && numdb == num {
+		log.Printf("TestCheckApplication Passed")
+	} else {
+		log.Fatal("TestCheckApplication Failed. Num Expected:", num, " Actual Num:", numdb, " Check:", check)
+	}
+}
 
-// func TestDeleteApplication(t *testing.T) {
-// 	type args struct {
-// 		num int
-// 	}
-// 	tests := []struct {
-// 		name string
-// 		args args
-// 	}{
-// 		// TODO: Add test cases.
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			DeleteApplication(tt.args.num)
-// 		})
-// 	}
-// }
+// TestDeleteApplication verifies if application is actually deleted
+func TestDeleteApplication(t *testing.T) {
+	var actualnum int
+	num := 34
+
+	DeleteApplication(num)
+	db := opendb.OpenDB()
+	row := db.QueryRow("SELECT acntnumber FROM applications WHERE acntnumber = $1", 0)
+	row.Scan(&actualnum)
+	if actualnum == 0 {
+		log.Printf("TestDeleteApplication Passed")
+	} else {
+		log.Fatal("TestDeleteApplication Failed. Account Number Expected: 0 Actual Account Number:", actualnum)
+	}
+}
+
+// TestApprove verifies if account is made
+func TestApprove(t *testing.T) {
+	//namedb := "testchecking"
+	var uname, acntname string
+	usernameinput := "bobt"
+	acntnameinput := "checking"
+	num := 33
+
+	Approve(num)
+	db := opendb.OpenDB()
+	row := db.QueryRow("SELECT username, acntname FROM applications WHERE username = $1 AND acntname = $2", usernameinput, acntnameinput)
+	row.Scan(&uname, &acntname)
+	if usernameinput == uname && acntnameinput == acntname {
+		log.Printf("TestApprove Passed")
+	} else {
+		log.Fatal("TestApprove Failed. Username Input:", usernameinput, " Actual Username", uname,
+			" Account Name Input:", acntnameinput, " Actual Account Name:", acntname)
+	}
+
+}
