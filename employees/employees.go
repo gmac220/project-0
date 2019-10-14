@@ -13,7 +13,7 @@ func EmployeePage() {
 	var num, acntnumber int
 	var username string
 
-	fmt.Println("What do you want to do")
+	fmt.Println("What do you want to do?")
 	fmt.Println("1: Approve")
 	fmt.Println("2: Deny")
 	fmt.Println("3: View Customer Info")
