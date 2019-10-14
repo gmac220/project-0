@@ -9,7 +9,7 @@ import (
 
 // TestVerifyAccount
 func TestVerifyAccount(t *testing.T) {
-	num := 6
+	num := 1
 	balanceexpected := 0.0
 
 	balance, _ := VerifyAccount(num)
@@ -22,7 +22,7 @@ func TestVerifyAccount(t *testing.T) {
 
 // TestCheckOwnAccount assumes that the account has been approved and account number is the first one.
 func TestCheckOwnAccount(t *testing.T) {
-	num := 6
+	num := 1
 	username := "bobt"
 	username2 := "bobt"
 
@@ -37,7 +37,7 @@ func TestCheckOwnAccount(t *testing.T) {
 
 func TestDeposit(t *testing.T) {
 	var balance float64
-	num := 6
+	num := 1
 	expectedinput := 100.0
 	balanceinput := 0.0
 
@@ -54,7 +54,7 @@ func TestDeposit(t *testing.T) {
 
 // TestShowBalance checks if account number passed in has balance.
 func TestShowBalance(t *testing.T) {
-	num := 6
+	num := 1
 	balanceexpected := 100.0
 
 	balance := ShowBalance(num)
@@ -67,7 +67,7 @@ func TestShowBalance(t *testing.T) {
 
 func TestWithdraw(t *testing.T) {
 	var balance float64
-	num := 6
+	num := 1
 	expectedinput := 50.0
 	balanceinput := 100.0
 
@@ -85,8 +85,8 @@ func TestWithdraw(t *testing.T) {
 func TestTransfer(t *testing.T) {
 	var withdrawnbalance, depositedbalance float64
 
-	numwithdraw := 6
-	numdeposit := 7
+	numwithdraw := 1
+	numdeposit := 2
 	expectedinput := 25.0
 	balanceinput := 50.0
 

@@ -31,8 +31,8 @@ func TestApply(t *testing.T) {
 	usernameinput := "bobt"
 	firstnameinput := "Bob"
 	lastnameinput := "Truss"
-	acntnameinput := "checking"
-	//acntnameinput := "testchecking"
+	// acntnameinput := "checking"
+	acntnameinput := "testchecking"
 
 	Apply(usernameinput, firstnameinput, lastnameinput, acntnameinput)
 	db := opendb.OpenDB()
@@ -55,8 +55,8 @@ func TestJointApp(t *testing.T) {
 	usernameinput := "bobt"
 	firstnameinput := "Bob"
 	lastnameinput := "Truss"
-	acntnameinput := "savings"
-	//acntnameinput := "testsavings"
+	// acntnameinput := "savings"
+	acntnameinput := "testsavings"
 	usernameinput2 := "markb"
 
 	JointApp(usernameinput, firstnameinput, lastnameinput, acntnameinput, usernameinput2)
@@ -81,8 +81,8 @@ func TestJointApp2(t *testing.T) {
 	firstnameinput := "Mark"
 	lastnameinput := "Bo"
 	usernameinput := "markb"
-	acntnameinput := "checkings"
-	//acntnameinput := "testcheckings"
+	// acntnameinput := "checkings"
+	acntnameinput := "testcheckings"
 	usernameinput2 := "bobt"
 
 	JointApp(usernameinput, firstnameinput, lastnameinput, acntnameinput, usernameinput2)

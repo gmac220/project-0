@@ -1,8 +1,7 @@
 # Bills FarGO
 ## Godfrey Macasero
-A banking app that has two users customers and employees. 
-This app simulates banking on the terminal that has interactive text menus.
-It is a simple banking application that emulates things you would be able to do at the bank like withdrawing, depositing, and transfering money to your different accounts.
+Bills FarGO is a banking app that is written in Golang. It uses docker and runs a postgres database using docker. You are able to log in as two different users which are customers and employees.
+This app simulates banking on the terminal that has interactive text menus. It is a simple banking application that emulates things a customer would be able to do at the bank like withdrawing, depositing, and transfering money to your different accounts. The employees on the other hand can view customer information, and approve or deny applications for accounts.
 
 # User Stories
 - [x] Customers should be able to:
@@ -53,18 +52,33 @@ go run main.go
 ```
 
 # Testing
-Testing commands for navigation package
+When testing make sure your container is new and nothing has been added to the database previously.
+Testing commands for navigation package. Optional -v for detailed run
 ```bash
 go test ./navigation
+go test -v ./navigation/
 ```
-
-Testing commands for customer package
+Need to figure out how to run only one file, but until then this is how I test the customer package.
+Testing commands for customer1_test.go
 ```bash
-go test ./customer
+go test -v ./customer/ -run SetCustomerVars
+go test -v ./customer/ -run Apply
+go test -v ./customer/ -run JointApp
+go test -v ./customer/ -run CheckCustomer
 ```
 
 Testing commands for employees package
 ```bash
 go test ./employees
+```
+
+Testing commands for customer2_test.go
+```bash
+go test -v ./customer/ -run VerifyAccount
+go test -v ./customer/ -run CheckOwnAccount
+go test -v ./customer/ -run Deposit
+go test -v ./customer/ -run ShowBalance
+go test -v ./customer/ -run Withdraw
+go test -v ./customer/ -run Transfer
 ```
 
