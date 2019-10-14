@@ -6,7 +6,7 @@ by Godfrey Macasero
 
 ### Tools used
 
--![Image](assets/github.png)
--![Image](assets/docker.png)
--![Image](assets/postgresql.png)
--![Image](assets/vscode.png) Visual Studio Code
+![Image](assets/github.png) Github.com
+![Image](assets/postgresql.png) Postgresql
+![Image](assets/vscode.png) Visual Studio Code
+![Image](assets/docker.png) Docker
