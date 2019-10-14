@@ -16,11 +16,12 @@ by Godfrey Macasero
 ### Initial Page
 
 +++
-### Sign In & Employee Sign In
+### @fa[check-square]() Sign In & Employee Sign In
 
 +++
 ### Account Creation
 ---
+
 ### Customers
 
 +++
