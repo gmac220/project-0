@@ -24,11 +24,7 @@ func Welcome() {
 // Selection prompts the user what they would want to do
 func Selection() {
 	var num int
-	var username string
-	var pass string
-	var firstname string
-	var lastname string
-	var choice string
+	var username, pass, firstname, lastname, choice string
 
 	fmt.Println("What would you like to do?")
 	fmt.Println("1: Sign In")
@@ -51,6 +47,7 @@ func Selection() {
 		if passdb == pass {
 			fmt.Println("Login Successful!")
 			customer.SetCustomerVars(usernamedb, fname, lname)
+			customer.ShowCustomerPrompts()
 		} else {
 			fmt.Println("Password does not match")
 			Selection()
@@ -90,7 +87,7 @@ func Selection() {
 		switch choice {
 		case "c":
 			customer.SetCustomerVars(username, firstname, lastname)
-
+			customer.ShowCustomerPrompts()
 		case "e":
 			employees.EmployeePage()
 		}
@@ -104,11 +101,9 @@ func Selection() {
 
 // SignIn verifies if customer or employee credentials match database
 func SignIn(username string, password string, employee bool) (string, string, string, string) {
-	var usernamedb string
-	var passdb string
-	var fname string
-	var lname string
+	var usernamedb, passdb, fname, lname string
 	var row *sql.Row
+
 	db := opendb.OpenDB()
 	defer db.Close()
 	if employee {
@@ -123,22 +118,22 @@ func SignIn(username string, password string, employee bool) (string, string, st
 
 // CreateAccount for either a customer or employee
 func CreateAccount(firstname string, lastname string, username string, password string, choice string) {
+
 	db := opendb.OpenDB()
 	defer db.Close()
 	switch choice {
 	case "c":
 		db.Exec("INSERT INTO customers (username, password, firstname, lastname)"+
 			"VALUES ($1, $2, $3, $4)", username, password, firstname, lastname)
-		//customer.SetCustomerVars(username, firstname, lastname)
 	case "e":
 		db.Exec("INSERT INTO employees (username, password, firstname, lastname)"+
 			"VALUES ($1, $2, $3, $4)", username, password, firstname, lastname)
-		//employees.EmployeePage()
 	}
 }
 
 // SttyCommand hides the password so it doesn't show up in the terminal when user types it
 func SttyCommand(flag string) {
+
 	cmd := exec.Command("stty", flag)
 	cmd.Stdin = os.Stdin
 	_, err := cmd.Output()

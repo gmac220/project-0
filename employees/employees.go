@@ -10,8 +10,7 @@ import (
 
 // EmployeePage prompts the employee what they could do and asks them to pick a choice.
 func EmployeePage() {
-	var num int
-	var acntnumber int
+	var num, acntnumber int
 	var username string
 
 	fmt.Println("What do you want to do")
@@ -51,18 +50,16 @@ func EmployeePage() {
 		Applications()
 	case 5:
 		os.Exit(0)
-		// default:
-		// 	fmt.Println("Choice does not exist.")
-		// 	EmployeePage()
+	default:
+		fmt.Println("Choice does not exist.")
+		EmployeePage()
 	}
 }
 
 // Approve the Customer's application
 func Approve(num int) {
-	var uname string
-	var acntname string
+	var uname, uname2, acntname string
 	var joint bool
-	var uname2 string
 
 	db := opendb.OpenDB()
 	defer db.Close()
@@ -84,6 +81,7 @@ func Approve(num int) {
 // CheckApplication verifies if application exists
 func CheckApplication(num int) bool {
 	var acntnumber int
+
 	db := opendb.OpenDB()
 	defer db.Close()
 	row := db.QueryRow("SELECT acntnumber FROM applications WHERE acntnumber = $1", num)
@@ -93,6 +91,7 @@ func CheckApplication(num int) bool {
 
 // DeleteApplication deletes row from applications table
 func DeleteApplication(num int) {
+
 	db := opendb.OpenDB()
 	defer db.Close()
 	db.Exec("DELETE FROM applications WHERE acntnumber = $1", num)
@@ -100,15 +99,9 @@ func DeleteApplication(num int) {
 
 // CustomerInfo looks at all of customers account information by passing in their username
 func CustomerInfo(username string) {
+	var acntname, uname, uname2, pw, fname, lname, otheruname string
 	var acntnumber int
-	var acntname string
 	var balance float64
-	var uname string
-	var uname2 string
-	var pw string
-	var fname string
-	var lname string
-	var otheruname string
 
 	db := opendb.OpenDB()
 	defer db.Close()
@@ -137,15 +130,9 @@ func CustomerInfo(username string) {
 
 // Applications loops through applications table listing if they are joint applications or not
 func Applications() {
+	var acntname, uname, fname, lname, uname2, fname2, lname2 string
 	var acntnum int
-	var acntname string
-	var uname string
-	var fname string
-	var lname string
 	var joint bool
-	var uname2 string
-	var fname2 string
-	var lname2 string
 
 	db := opendb.OpenDB()
 	defer db.Close()

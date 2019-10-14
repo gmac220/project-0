@@ -8,29 +8,22 @@ import (
 	"github.com/gmac220/project-0/opendb"
 )
 
-var cusername string
-var cfirstname string
-var clastname string
+var cusername, cfirstname, clastname string
 
-// SetCustomerVars initializes global variables
-func SetCustomerVars(username string, firstname string, lastname string) {
+// SetCustomerVars initializes global variables.
+// Values are returned for testing purposes.
+func SetCustomerVars(username string, firstname string, lastname string) (string, string, string) {
 	cusername = username
 	cfirstname = firstname
 	clastname = lastname
-	ShowCustomerPrompts()
+	return cusername, cfirstname, clastname
 }
 
 // ShowCustomerPrompts asks the customer what they could do and asks them to pick a choice.
 func ShowCustomerPrompts() {
-	var num int
-	var acntname string
-	var username2 string
-	var acntnum int
-	var withdrawal float64
-	var deposit float64
-	var acntnumwithdraw int
-	var acntnumdeposit int
-	var funds float64
+	var num, acntnumwithdraw, acntnumdeposit, acntnum int
+	var acntname, username2 string
+	var withdrawal, deposit, funds float64
 
 	fmt.Println("What would you like to do today?")
 	fmt.Println("1: Apply")
@@ -50,23 +43,27 @@ func ShowCustomerPrompts() {
 		fmt.Printf("What type of account do you want to open? checking, savings, other...: ")
 		fmt.Scanln(&acntname)
 		Apply(cusername, cfirstname, clastname, acntname)
+		ShowCustomerPrompts()
 	case 2:
 		fmt.Printf("What type of account do you want to open? checking, savings, other...: ")
 		fmt.Scanln(&acntname)
 		fmt.Printf("What user do you want to share an account with? Please input username of that user: ")
 		fmt.Scanln(&username2)
 		JointApp(cusername, cfirstname, clastname, acntname, username2)
+		ShowCustomerPrompts()
 	case 3:
 		ShowAccounts(cusername)
 	case 4:
 		fmt.Printf("What account number do you want to check the balance for?: ")
 		fmt.Scanln(&acntnum)
 		ShowBalance(acntnum)
+		ShowCustomerPrompts()
 	case 5:
 		fmt.Printf("What account number would you like to withdraw from: ")
 		fmt.Scanln(&acntnum)
 		balance, _ := VerifyAccount(acntnum)
-		if CheckOwnAccount(acntnum) {
+		check, _, _ := CheckOwnAccount(acntnum)
+		if check {
 			fmt.Printf("How much money would you like to withdraw? Ex. 20.02: ")
 			fmt.Scanln(&withdrawal)
 			Withdraw(acntnum, withdrawal, balance)
@@ -78,7 +75,8 @@ func ShowCustomerPrompts() {
 		fmt.Printf("What account number would you like to deposit into: ")
 		fmt.Scanln(&acntnum)
 		balance, _ := VerifyAccount(acntnum)
-		if CheckOwnAccount(acntnum) {
+		check, _, _ := CheckOwnAccount(acntnum)
+		if check {
 			fmt.Printf("How much money would you like to deposit? Ex. 20.02: ")
 			fmt.Scanln(&deposit)
 			Deposit(acntnum, deposit, balance)
@@ -90,7 +88,8 @@ func ShowCustomerPrompts() {
 		fmt.Printf("What account number would you like to take money out of?: ")
 		fmt.Scanln(&acntnumwithdraw)
 		balance, _ := VerifyAccount(acntnumwithdraw)
-		if CheckOwnAccount(acntnumwithdraw) {
+		check, _, _ := CheckOwnAccount(acntnumwithdraw)
+		if check {
 			fmt.Printf("What account number would you like to transfer into?: ")
 			fmt.Scanln(&acntnumdeposit)
 			VerifyAccount(acntnumdeposit)
@@ -105,15 +104,14 @@ func ShowCustomerPrompts() {
 		ShowPendingApps(cusername)
 	case 9:
 		os.Exit(0)
-		// default:
-		// 	fmt.Println("Choice does not exist.")
-		// 	ShowCustomerPrompts()
+	default:
+		fmt.Println("Choice does not exist.")
+		ShowCustomerPrompts()
 	}
 }
 
 // Apply adds to applications table
 func Apply(username string, firstname string, lastname string, acntname string) {
-	//var acntname string
 
 	db := opendb.OpenDB()
 	defer db.Close()
@@ -122,7 +120,6 @@ func Apply(username string, firstname string, lastname string, acntname string) 
 		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
 		username, firstname, lastname, acntname, false, "N/A", "N/A", "N/A")
 	fmt.Println("Application Successful!")
-	ShowCustomerPrompts()
 }
 
 // JointApp adds to applications table
@@ -141,14 +138,11 @@ func JointApp(username string, firstname string, lastname string, acntname strin
 		"VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
 		username, firstname, lastname, acntname, true, uname2, fname2, lname2)
 	fmt.Println("Joint Application with", uname2, "Successful!")
-	ShowCustomerPrompts()
 }
 
 // CheckCustomer verifies if the customer exists
 func CheckCustomer(username string) (string, string, string) {
-	var uname string
-	var fname string
-	var lname string
+	var uname, fname, lname string
 
 	db := opendb.OpenDB()
 	defer db.Close()
@@ -160,11 +154,9 @@ func CheckCustomer(username string) (string, string, string) {
 
 // ShowAccounts lists out the accounts the user currently has
 func ShowAccounts(username string) {
+	var acntname, uname, username2 string
 	var acntnumber int
-	var acntname string
 	var balance float64
-	var uname string
-	var username2 string
 
 	db := opendb.OpenDB()
 	defer db.Close()
@@ -193,28 +185,30 @@ func ShowAccounts(username string) {
 	ShowCustomerPrompts()
 }
 
-// CheckOwnAccount verifies if the customer owns the account
-func CheckOwnAccount(num int) bool {
-	var username string
-	var username2 string
+// CheckOwnAccount verifies if the customer owns the account.
+// Returns username and username2 for testing purposes.
+func CheckOwnAccount(num int) (bool, string, string) {
+	var username, username2 string
 
 	db := opendb.OpenDB()
 	defer db.Close()
 	row := db.QueryRow("SELECT username, username2 FROM accounts WHERE acntnumber = $1", num)
 	row.Scan(&username, &username2)
-	return cusername == username || cusername == username2
+	return cusername == username || cusername == username2, username, username2
 }
 
-// ShowBalance shows the balance of an account the user chooses
-func ShowBalance(acntnum int) {
+// ShowBalance shows the balance of an account the user chooses.
+// Returns balance for testing
+func ShowBalance(acntnum int) float64 {
 	balance, _ := VerifyAccount(acntnum)
-	if CheckOwnAccount(acntnum) {
+	check, _, _ := CheckOwnAccount(acntnum)
+
+	if check {
 		fmt.Println("This is your balance: ", balance)
 	} else {
 		fmt.Println("You do not have access to this account.")
 	}
-
-	ShowCustomerPrompts()
+	return balance
 }
 
 // VerifyAccount checks if there is an account with number specified
@@ -255,15 +249,9 @@ func Deposit(acntnum int, deposit float64, balance float64) {
 
 // ShowPendingApps shows the amount of applications the user has applied to
 func ShowPendingApps(username string) {
-	var uname string
+	var uname, acntname, fname, lname, uname2, fname2, lname2 string
 	var acntnum int
-	var acntname string
-	var fname string
-	var lname string
 	var joint bool
-	var uname2 string
-	var fname2 string
-	var lname2 string
 
 	db := opendb.OpenDB()
 	defer db.Close()
