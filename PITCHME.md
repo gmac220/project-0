@@ -13,7 +13,47 @@ by Godfrey Macasero
 ![Image](assets/vscode.png) Visual Studio Code
 
 ---
+### Initial Page
+
++++
+### Sign In & Employee Sign In
+
++++
+### Account Creation
+---
 ### Customers
 
++++
+### Apply
+
++++
+### Show Accounts
+
++++
+### Check Balance
+
++++
+### Withdraw
+
++++
+### Transfer funds
+
++++
+### Check Pending Applications
 ---
 ### Employees
+
++++
+### Approve Applications
+
++++
+### Deny Applications
+
++++
+### View Customer Information
+
++++
+### Show Pending Applications
+
+---
+### Demo
