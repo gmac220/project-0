@@ -25,7 +25,7 @@ by Godfrey Macasero
 ### Customers
 
 +++
-### @fa[user]()Apply
+### @fa[user]() Apply
 
 +++
 ### @fa[address-card]()Show Accounts
