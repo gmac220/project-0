@@ -34,10 +34,10 @@ by Godfrey Macasero
 ### @fa[dollar]()Check Balance
 
 +++
-### @fa[money]()Withdraw
+### @fa[money]()@fa[hand-paper-o]()Withdraw
 
 +++
-### @fa[dollar]()Deposit
+### @fa[money]()Deposit
 
 +++
 ### @fa[credit-card-alt]()Transfer funds
@@ -57,7 +57,7 @@ by Godfrey Macasero
 ### @fa[address-card]()View Customer Information
 
 +++
-### @fa[address-card]()Show Pending Applications
+### @fa[list-alt]()Show Pending Applications
 
 ---
 ### @fa[laptop]()Demo
