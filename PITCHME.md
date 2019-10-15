@@ -31,13 +31,13 @@ by Godfrey Macasero
 ### @fa[address-card]()Show Accounts
 
 +++
-### @emoji[dollar]()Check Balance
+### @fa[dollar]()Check Balance
 
 +++
-### @emoji[money_with_wings]()Withdraw
+### @fa[money]()@fa[hand-paper-o]()Withdraw
 
 +++
-### @emoji[moneybag]()Deposit
+### @fa[money]()Deposit
 
 +++
 ### @fa[credit-card-alt]()Transfer funds
@@ -51,7 +51,7 @@ by Godfrey Macasero
 ### @fa[check]()Approve Applications
 
 +++
-### @emoji[sob]()Deny Applications
+### @fa[frown-o]()Deny Applications
 
 +++
 ### @fa[address-card]()View Customer Information
@@ -60,4 +60,4 @@ by Godfrey Macasero
 ### @fa[list-alt]()Show Pending Applications
 
 ---
-### @emoji[computer]()Demo
+### @fa[laptop]()Demo
