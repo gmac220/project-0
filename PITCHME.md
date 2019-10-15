@@ -19,42 +19,45 @@ by Godfrey Macasero
 ### @fa[check-square]() Sign In & Employee Sign In
 
 +++
-### Account Creation
+### @fa[pencil-square-o]Account Creation
 ---
 
 ### Customers
 
 +++
-### Apply
+### @fa[user]()Apply
 
 +++
-### Show Accounts
+### @fa[address-card]()Show Accounts
 
 +++
-### Check Balance
+### @fa[dollar]()Check Balance
 
 +++
-### Withdraw
+### @fa[money]()Withdraw
 
 +++
-### Transfer funds
+### @fa[dollar]()Deposit
 
 +++
-### Check Pending Applications
+### @fa[credit-card-alt]()Transfer funds
+
++++
+### @fa[list]()Check Pending Applications
 ---
 ### Employees
 
 +++
-### Approve Applications
+### @fa[check]()Approve Applications
 
 +++
-### Deny Applications
+### @fa[frown-o]()Deny Applications
 
 +++
-### View Customer Information
+### @fa[address-card]()View Customer Information
 
 +++
-### Show Pending Applications
+### @fa[address-card]()Show Pending Applications
 
 ---
-### Demo
+### @fa[laptop]()Demo
