@@ -1,4 +1,5 @@
 theme : template
-theme-background : ["white"]
+theme-background : ["black"]
 theme-headline   : [ "Raleway", "#FFA48E", "none" ]
+theme-byline     : [ "Raleway", "#FFA48E", "none" ]
 theme-text       : [ "Raleway", "#FFA48E", "none" ]
