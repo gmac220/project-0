@@ -8,8 +8,8 @@ by Godfrey Macasero
 
 ![Image](assets/docker.png) Docker
 ![Image](assets/go.png) Golang
-![Image](assets/github.png) Github.com
-![Image](assets/postgresql.png) Postgresql
+![Image](assets/githubblue.png) Github.com
+![Image](assets/postgresql3.png) Postgresql
 ![Image](assets/vscode.png) Visual Studio Code
 
 ---
