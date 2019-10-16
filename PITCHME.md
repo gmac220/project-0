@@ -10,7 +10,7 @@ by Godfrey Macasero
 ![Image](assets/postgresql3.png) Postgresql
 ![Image](assets/githubblue.png) Github.com
 ![Image](assets/vscode.png) Visual Studio Code
-![Image](assets/goblue.png) Golang
+![Image](assets/goblue.svg) Golang
 
 ---
 ### Initial Page
