@@ -1,2 +1,3 @@
 theme : template
 theme-background : ["black"]
+theme-headline   : [ "Ubuntu", "#262833", "none" ]
