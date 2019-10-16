@@ -38,6 +38,10 @@ func Selection() {
 	case 1:
 		fmt.Printf("Enter username: ")
 		fmt.Scanln(&username)
+		if username == "" {
+			fmt.Printf("Can't have empty username \n")
+			Selection()
+		}
 		fmt.Printf("Enter password: ")
 		SttyCommand("-echo")
 		fmt.Scanln(&pass)
@@ -56,6 +60,10 @@ func Selection() {
 	case 2:
 		fmt.Printf("Enter username: ")
 		fmt.Scanln(&username)
+		if username == "" {
+			fmt.Printf("Can't have empty username \n")
+			Selection()
+		}
 		fmt.Printf("Enter password: ")
 		SttyCommand("-echo")
 		fmt.Scanln(&pass)
@@ -76,6 +84,10 @@ func Selection() {
 		fmt.Scanln(&lastname)
 		fmt.Printf("Enter username: ")
 		fmt.Scanln(&username)
+		if username == "" {
+			fmt.Printf("Can't have empty username \n")
+			Selection()
+		}
 		fmt.Printf("Enter password: ")
 		SttyCommand("-echo")
 		fmt.Scanln(&pass)

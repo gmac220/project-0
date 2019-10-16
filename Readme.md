@@ -93,3 +93,5 @@ go test -v ./customer/ -run Withdraw
 go test -v ./customer/ -run Transfer
 ```
 ### [Presentation](https://gitpitch.com/gmac220/project-0/master)
+
+go test -timeout 30s github.com/gmac220/project-0/employees -coverprofile=/tmp/vscode-goKcYvzT/go-code-cover
