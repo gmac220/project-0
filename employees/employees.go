@@ -111,7 +111,9 @@ func CustomerInfo(username string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("---------------------------" + username + "'s INFORMATION------------------------------")
+	fmt.Println("┌---------------------------------------------------------------------------------┐")
+	fmt.Println("                                  " + username + "'s INFORMATION")
+	fmt.Println("└---------------------------------------------------------------------------------┘")
 	fmt.Println()
 	for rows.Next() {
 		rows.Scan(&acntnumber, &acntname, &balance, &uname, &uname2, &otheruname, &pw, &fname, &lname)
@@ -126,7 +128,7 @@ func CustomerInfo(username string) {
 		}
 	}
 	fmt.Println()
-	fmt.Println("---------------------------------------------------------------------------------")
+	fmt.Println("-----------------------------------------------------------------------------------")
 	EmployeePage()
 }
 
