@@ -7,10 +7,10 @@ by Godfrey Macasero
 ### Tools used
 
 ![Image](assets/docker.png) Docker
-![Image](assets/golangblue.png) Golang
-![Image](assets/githubblue.png) Github.com
 ![Image](assets/postgresql3.png) Postgresql
+![Image](assets/githubblue.png) Github.com
 ![Image](assets/vscode.png) Visual Studio Code
+![Image](assets/golangblue.png) Golang
 
 ---
 ### Initial Page
