@@ -1,0 +1,6 @@
+theme : template
+theme-background : ["black"]
+theme-headline   : [ "Raleway", "#054950", "none" ]
+theme-byline     : [ "Raleway", "#6c9aa1", "none" ]
+theme-text       : [ "Raleway", "#6c9aa1", "none" ]
+theme-links       : [ "#6c9aa1", "#054950" ]
