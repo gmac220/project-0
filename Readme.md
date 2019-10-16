@@ -21,11 +21,14 @@ This app simulates banking on the terminal that has interactive text menus. It i
 
 
 # Instructions
-Cloning from git
+Cloning from git.
+
 Make sure you have a file structure in your go/src with a directory stucture shown below.
+```
 .
 ├── github.com
     └── gmac220
+```
 Then call git clone inside the ~/go/src/github.com/gmac220 directory
 
 Make sure to have docker installed in your terminal type
@@ -48,6 +51,7 @@ docker run -p 5432:5432 -d --rm --name runningbillsfargo billsfargo
 ```
 
 **OPTIONAL COMMAND**
+
 If you want to look into your table in postgres use this command
 ```bash
 docker exec -it runningbillsfargo psql -U postgres
@@ -88,4 +92,4 @@ go test -v ./customer/ -run ShowBalance
 go test -v ./customer/ -run Withdraw
 go test -v ./customer/ -run Transfer
 ```
-
+### [Presentation](gitpitch.com/gmac220/project-0/master)
