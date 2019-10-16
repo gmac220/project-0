@@ -92,4 +92,4 @@ go test -v ./customer/ -run ShowBalance
 go test -v ./customer/ -run Withdraw
 go test -v ./customer/ -run Transfer
 ```
-### [Presentation](gitpitch.com/gmac220/project-0/master)
+### [Presentation](https://gitpitch.com/gmac220/project-0/master)
