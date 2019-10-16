@@ -66,4 +66,4 @@ by Godfrey Macasero
 ### Q&A
 
 ---
-### [Github Repository](https://github.com/gmac220/project-0)
+### [Github Repositor](https://github.com/gmac220/project-0)
