@@ -101,7 +101,6 @@ func DeleteApplication(num int) {
 
 // CustomerInfo looks at all of customers account information by passing in their username
 func CustomerInfo(username string) {
-	var acntname, uname, uname2, pw, fname, lname, otheruname string
 	var acntnumber int
 	var balance float64
 
@@ -116,6 +115,7 @@ func CustomerInfo(username string) {
 	fmt.Println("└---------------------------------------------------------------------------------┘")
 	fmt.Println()
 	for rows.Next() {
+		var acntname, uname, uname2, pw, fname, lname, otheruname string = "", "", "", "", "", "", ""
 		rows.Scan(&acntnumber, &acntname, &balance, &uname, &uname2, &otheruname, &pw, &fname, &lname)
 		if uname2 == username {
 			fmt.Println("Account #:", acntnumber, "|Account Name:", acntname, "|Balance:", balance, "|Other Account Holder:", uname)
