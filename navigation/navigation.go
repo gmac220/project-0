@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/exec"
 
@@ -153,4 +154,24 @@ func SttyCommand(flag string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func Formsubmit(response http.ResponseWriter, request *http.Request) {
+	var username = request.FormValue("username")
+	var pass = request.FormValue("pass")
+	var firstname = request.FormValue("firstname")
+	var lastname = request.FormValue("lastname")
+
+	fmt.Println("Username", username)
+	fmt.Println("Password", pass)
+	fmt.Println("First name", firstname)
+	fmt.Println("Last name", lastname)
+
+	db := opendb.OpenDB()
+	defer db.Close()
+	result, err := db.Exec("INSERT INTO customers (username, password, firstname, lastname) VALUES ($1, $2, $3, $4)", username, pass, firstname, lastname)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(result)
 }
